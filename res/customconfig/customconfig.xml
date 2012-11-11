@@ -512,6 +512,8 @@
 
 		<button description="ZRAM check for active state" name="ZRAM STATS" action="push-actions/zramstats" label="ZRAM STATS"/>
 
+		<button description="Update time via ntp-server" name="UPDATE TIME" action="push-actions/time_update" label="UPDATE TIME"/>
+
 		<spinner description="GPS Time Zone for faster LOCK! Use your region to fix GPS location!" name="GPS Region" action="gpsregion">
 			<spinnerItem name="No GPS Zone changes (default)" value="No_GPS_Zone_changes"/> 
 			<spinnerItem name="Set Asia" value="Asia"/> 

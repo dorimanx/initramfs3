@@ -14,7 +14,7 @@ if [ "a$2" != "a" ]; then
 		echo "root:x:0:0::/data/crontab/cron:/sbin/sh" > /etc/passwd;
 
 		# set timezone
-		timezone=`date +%:::z`;
+		timezone=`date +%z`;
 		timezone_name=`date +%Z`;
 
 		plus_zone=`echo ${timezone} | grep +`;

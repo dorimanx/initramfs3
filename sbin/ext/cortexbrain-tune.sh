@@ -85,7 +85,7 @@ IO_TWEAKS()
 			fi;
 
 			if [ -e $i/queue/read_ahead_kb ]; then
-				echo "2048" >  $i/queue/read_ahead_kb; # default: 128
+				echo "1024" >  $i/queue/read_ahead_kb; # default: 128
 			fi;
 
 			if [ -e $i/queue/nr_requests ]; then
@@ -107,12 +107,12 @@ IO_TWEAKS()
 		done;
 
 		if [ -e /sys/devices/virtual/bdi/default/read_ahead_kb ]; then
-			echo "2048" > /sys/devices/virtual/bdi/default/read_ahead_kb;
+			echo "1024" > /sys/devices/virtual/bdi/default/read_ahead_kb;
 		fi;
 
 		SDCARDREADAHEAD=`ls -d /sys/devices/virtual/bdi/179*`;
 		for i in $SDCARDREADAHEAD; do
-			echo "2048" > $i/read_ahead_kb;
+			echo "1024" > $i/read_ahead_kb;
 		done;
 
 		echo "10" > /proc/sys/fs/lease-break-time;
@@ -163,10 +163,10 @@ BATTERY_TWEAKS()
 		LEVEL=`cat /sys/class/power_supply/battery/capacity`;
 		CURR_ADC=`cat /sys/class/power_supply/battery/batt_current_adc`;
 		BATTFULL=`cat /sys/class/power_supply/battery/batt_full_check`;
-		echo "*** LEVEL: $LEVEL - CUR: $CURR_ADC ***"
+		log -p i -t $FILE_NAME "*** BATTERY - LEVEL: $LEVEL - CUR: $CURR_ADC ***";
 		if [ "$LEVEL" == 100 ] && [ "$BATTFULL" == 1 ]; then
 			rm -f /data/system/batterystats.bin;
-			echo "battery-calibration done ...";
+			log -p i -t $FILE_NAME "battery-calibration done ...";
 		fi;
 
 		if [ "$power_reduce" == on ]; then
@@ -239,22 +239,20 @@ MEGA_BOOST_CPU_TWEAKS()
 		# GPU utilization to min delay
 		echo "100" > /sys/module/mali/parameters/mali_gpu_utilization_timeout;
 
-		# cpu-settings for second core online at booster time.
+		# cpu-settings for second core online at booster time
 		echo "15" > /sys/module/stand_hotplug/parameters/load_h0;
 		echo "15" > /sys/module/stand_hotplug/parameters/load_l1;
 
-		# boost wakeup.
-		if [ "$scaling_max_freq" \> 1100000 ]; then
-			# Powering MAX FREQ
+		# boost wakeup
+		if [ "$scaling_max_freq" \> 1000000 ]; then
+			# powering MAX FREQ
 			echo "$scaling_max_freq" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
-			# Powering MIN FREQ
-			echo "1000000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq;
 		else
-			# Powering MAX FREQ
+			# powering MAX FREQ
 			echo "1000000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
-			# Powering MIN FREQ
-			echo "1000000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq;
 		fi;
+		# powering MIN FREQ
+		echo "1000000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq;
 
 		log -p i -t $FILE_NAME "*** MEGA_BOOST_CPU_TWEAKS Mode ***";
 	fi;
@@ -620,7 +618,7 @@ WAKEUP_BOOST()
 {
 	# check if ROM booting now, if yes, dont wait. creation and deletion of /data/.siyah/booting @> /sbin/ext/post-init.sh
 	if [ ! -e /data/.siyah/booting ] && [ "$wakeup_boost" != 0 ]; then
-		log -p i -t $FILE_NAME "*** WAKEUP_BOOST Mode ***";
+		log -p i -t $FILE_NAME "*** WAKEUP_BOOST ${wakeup_boost}sec Mode ***";
 		sleep $wakeup_boost;
 	fi;
 }
@@ -629,7 +627,7 @@ WAKEUP_DELAY()
 {
 	# set wakeup booster delay to prevent mp3 music shattering when screen turned ON.
 	if [ "$wakeup_delay" != 0 ] && [ ! -e /data/.siyah/booting ]; then
-		log -p i -t $FILE_NAME "*** WAKEUP_DELAY Mode ***";
+		log -p i -t $FILE_NAME "*** WAKEUP_DELAY ${wakeup_delay}sec Mode ***";
 		sleep $wakeup_delay
 	fi;
 }
@@ -637,7 +635,7 @@ WAKEUP_DELAY()
 WAKEUP_DELAY_SLEEP()
 {
 	if [ "$wakeup_delay" != 0 ] && [ ! -e /data/.siyah/booting ]; then
-		log -p i -t $FILE_NAME "*** WAKEUP_DELAY_SLEEP Mode ***";
+		log -p i -t $FILE_NAME "*** WAKEUP_DELAY_SLEEP ${wakeup_delay}sec Mode ***";
 		sleep $wakeup_delay;
 	else
 		log -p i -t $FILE_NAME "*** WAKEUP_DELAY_SLEEP 3sec Mode ***";
@@ -663,12 +661,15 @@ AUTO_BRIGHTNESS()
 SWAPPINESS()
 {
 	# set swappiness in case that no root installed, and zram used or disk swap used
-	SWAP_CHECK=`free | grep Swap | cut -c 18-18`;
+	SWAP_CHECK=`free | grep Swap | awk '{ print $2 }'`;
 	if [ "$zramtweaks" == 4 ] || [ "$SWAP_CHECK" == 0 ]; then
 		echo "0" > /proc/sys/vm/swappiness;
 		log -p i -t $FILE_NAME "*** SWAPPINESS Mode OFF ***";
 	else
-		echo "60" > /proc/sys/vm/swappiness;
+		TOTAL_MEM=$(grep MemTotal /proc/meminfo | awk '{ print $2 }');
+		USED_MEM=$(grep AnonPages /proc/meminfo | awk '{ print $2 }');
+		RESULT_FOR_SWAPPINESS=$(($USED_MEM*100/$TOTAL_MEM));
+		echo "$RESULT_FOR_SWAPPINESS" > /proc/sys/vm/swappiness;
 		log -p i -t $FILE_NAME "*** SWAPPINESS Mode ON ***";
 	fi;
 }

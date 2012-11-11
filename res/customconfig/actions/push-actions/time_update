@@ -1,0 +1,13 @@
+#!/sbin/busybox sh
+
+	TMPFILE=$(mktemp -t);
+
+	TESTCONNECTION=`wget http://www.google.com -O $TMPFILE &>/dev/null 2>&1`;
+	if [ $? != 0 ]; then
+		echo "Problem: no internet connection! connect and try again";
+	else
+		(
+			ntpd -n -q -p `cat /system/etc/gps.conf | grep NTP_SERVER | cut -f 2 -d "="`;
+		)&
+		echo "updated time via ntp";
+	fi;

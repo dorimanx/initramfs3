@@ -12,7 +12,8 @@ elif [ -f /system/xbin/su ] && [ -f /data/app/*uper?ser.apk ]; then
 	echo "You have full working ROOT Installed!";
 elif [ -f /system/xbin/su ] && [ -f /data/app/Superuser.apk ]; then
 	echo "You have full working ROOT Installed!";
+elif [ -x /system/xbin/su ] && [ -u /system/xbin/su ]; then
+	echo "You have working ROOT Installed!!";
 else
 	echo "You don't have ROOT installed!";
 fi;
-

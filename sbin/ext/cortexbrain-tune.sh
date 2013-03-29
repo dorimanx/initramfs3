@@ -181,7 +181,7 @@ SYSTEM_TWEAKS()
 	if [ "$cortexbrain_system" == on ]; then
 		# render UI with GPU
 		setprop hwui.render_dirty_regions false;
-		setprop windowsmgr.max_events_per_sec 180;
+		setprop windowsmgr.max_events_per_sec 240;
 		setprop profiler.force_disable_err_rpt 1;
 		setprop profiler.force_disable_ulog 1;
 
@@ -612,7 +612,7 @@ WIFI_PM()
 		#fi;
 
 		if [ "$supplicant_scan_interval" -le 180 ]; then
-			setprop wifi.supplicant_scan_interval 360;
+			setprop wifi.supplicant_scan_interval 240;
 		else
 			setprop wifi.supplicant_scan_interval $supplicant_scan_interval;
 		fi;

@@ -11,6 +11,9 @@ else
 fi;
 
 case "${supplicant_scan_interval}" in
+	15)
+		setprop wifi.supplicant_scan_interval 15;
+	;;
 	60)
 		setprop wifi.supplicant_scan_interval 60;
 	;;

@@ -31,7 +31,7 @@
 			<spinnerItem name="off" value="0"/> 
 		</spinner>
 
-		<seekBar description="Minimum Frequency until second core will not be turned on, regardless of thresholds. (Default: 600.000 kHz)" 
+		<seekBar description="Minimum Frequency until second core will not be turned on, regardless of thresholds. (Default: 500.000 kHz)" 
 			name="Min Frequency for 2-core" action="genericfreq /sys/module/stand_hotplug/parameters/freq_min" 
 			unit="kHz" min="100000" reversed="false" step="100000" max="1000000"/>
 
@@ -185,7 +185,7 @@
 
 	<settingsPane description="Global Govs Configuration, see descriptions" name="GLOBAL GOV CONFIGURATON">
 
-		<seekBar description="Measured as percentage, when load on CPU is equal to above up threshold, CPU is scaled Up. Lower value - early scale up, and vice-verse. (Only for HYPER, Ondemand, Intellimand, PegasusQ, Conservative, Scary, Sleepy) (Default: 75%)"
+		<seekBar description="Measured as percentage, when load on CPU is equal to above up threshold, CPU is scaled Up. Lower value - early scale up, and vice-verse. (Only for HYPER, Ondemand, Intellimand, PegasusQ, Conservative, Scary, Sleepy) (Default: 70%)"
 			name="up_threshold" action="generic_cortex /tmp/up_threshold" unit="%" min="1" reversed="false" step="1" max="100"/>
 
 		<seekBar description="This threshold is used as up threshold while sampling at frequencies less than freq_for_responsiveness. Above that, normal up_threshold is used. This gives us an option to make scaling aggressive/relaxed until a frequency and normal for higher frequencies. Again, during calculation of optimal frequency which should not trigger up policy, down threshold to consider is difference between up_threshold_at_min_freq and down_differential. (Only for HYPER, Ondemand and PegasusQ) (Default: 60%)"
@@ -228,10 +228,10 @@
 		<seekBar description="cpu load and freq_step_dec will be multiplied by freq_for_calc_decr. It defines how much the frequency decrement is during cpu scaling! It has been configured to 200.000 kHz. If you don't know what it means, please don't change it! (Only for Nightmare) (Default: 200.000 kHz)"
 			name="freq_for_calc_decr" action="generic_cortex /tmp/freq_for_calc_decr" unit="kHz" min="200000" reversed="false" step="100000" max="400000"/>
 
-		<seekBar description="Defines how much as a percentage of maximum frequency, governor should decrease CPU frequency each time CPU load reaches dec_cpu_load. (Only for Nightmare) (Default: 15%)"
+		<seekBar description="Defines how much as a percentage of maximum frequency, governor should decrease CPU frequency each time CPU load reaches dec_cpu_load. (Only for Nightmare) (Default: 10%)"
 			name="freq_step_dec" action="generic_cortex /tmp/freq_step_dec" unit="%" min="0" reversed="false" step="1" max="100"/>
 
-		<seekBar description="Brake scale up frequency when load 'big or equal' inc_cpu_load. (Only for Nightmare) (Default: 15)"
+		<seekBar description="Brake scale up frequency when load 'big or equal' inc_cpu_load. (Only for Nightmare) (Default: 30)"
 			name="freq_up_brake" action="generic_cortex /tmp/freq_up_brake" unit="step" min="0" reversed="false" step="1" max="100"/>
 
 		<seekBar description="This threshold is used as up threshold while sampling at frequencies less than freq_for_responsiveness. Above that, normal inc_cpu_load is used. This gives us an option to make scaling aggressive/relaxed until a frequency and normal for higher frequencies. Again, during calculation of optimal frequency which should not trigger up policy, down threshold to consider is difference between inc_cpu_load_at_min_freq and freq_up_brake. (Only for Nightmare) (Default: 60%)"
@@ -284,10 +284,10 @@
 
 	<settingsPane description="Global Govs Configuration, see descriptions" name="GLOBAL GOV CONFIGURATON">
 
-		<seekBar description="Measured as percentage, when load on CPU is equal to above up threshold, CPU is scaled Up. Lower value - early scale up, and vice-verse. (Only for HYPER, Ondemand, Intellimand, PegasusQ, Conservative, Scary, Sleepy) (Default: 80%)"
+		<seekBar description="Measured as percentage, when load on CPU is equal to above up threshold, CPU is scaled Up. Lower value - early scale up, and vice-verse. (Only for HYPER, Ondemand, Intellimand, PegasusQ, Conservative, Scary, Sleepy) (Default: 70%)"
 			name="up_threshold_sleep" action="generic_cortex /tmp/up_threshold_sleep" unit="%" min="1" reversed="false" step="1" max="100"/>
 
-		<seekBar description="This threshold is used as up threshold while sampling at frequencies less than freq_for_responsiveness. Above that, normal up_threshold is used. This gives us an option to make scaling aggressive/relaxed until a frequency and normal for higher frequencies. Again, during calculation of optimal frequency which should not trigger up policy, down threshold to consider is difference between up_threshold_at_min_freq and down_differential. (Only for HYPER, Ondemand and PegasusQ) (Default: 70%)"
+		<seekBar description="This threshold is used as up threshold while sampling at frequencies less than freq_for_responsiveness. Above that, normal up_threshold is used. This gives us an option to make scaling aggressive/relaxed until a frequency and normal for higher frequencies. Again, during calculation of optimal frequency which should not trigger up policy, down threshold to consider is difference between up_threshold_at_min_freq and down_differential. (Only for HYPER, Ondemand and PegasusQ) (Default: 60%)"
 			name="up_threshold_at_min_freq_sleep" action="generic_cortex /tmp/up_threshold_at_min_freq_sleep" unit="%" min="1" reversed="false" step="1" max="100"/>
 
 		<seekBar description="Measured in uS and actual meaning being Sampling Interval, this factor determines how often the governor should poll for CPU usage in terms of frequency and load percentage to make scaling decisions - either scale CPU Up or scale it Down. (Only for HYPER, OnDemand, Intellimand, PegasusQ, Conservative, Scary, Sleepy) (Default: 60.000 uS)"
@@ -296,13 +296,13 @@
 		<seekBar description="Acts as a multiplier for sampling interval for re-evaluating the load when CPU is truly busy and is on highest clock frequency (policy max). Setting to 1 makes no difference and causes CPU to immediately scale down from highest frequency. Sampling down factor is NOT valid for lower frequencies and low load conditions. Note that CPU is scaled up to max frequency when max_load_freq is greater than up_threshold*current frequency. (or to cur_freq + (freq_step * policy.max_freq) whichever is smaller) Max_load_freq is an arbitrary frequency calculated as the maximum of load_frequencies. (Only for HYPER, Ondemand, Intellimand, PegasusQ, Conservartive, Nightmare, Scary, Sleepy) (Default: 1)"
 			name="sampling_down_factor_sleep" action="generic_cortex /tmp/sampling_down_factor_sleep" unit="int" min="1" reversed="false" step="1" max="10"/>
 
-		<seekBar description="Defines how much as a percentage of maximum frequency, governor should increase CPU frequency each time CPU load reaches up_threshold or inc_cpu_load. (Only for HYPER, Ondemand, PegasusQ, Nightmare, Conservative, Scary) (Default: 15%)"
+		<seekBar description="Defines how much as a percentage of maximum frequency, governor should increase CPU frequency each time CPU load reaches up_threshold or inc_cpu_load. (Only for HYPER, Ondemand, PegasusQ, Nightmare, Conservative, Scary) (Default: 20%)"
 			name="freq_step_sleep" action="generic_cortex /tmp/freq_step_sleep" unit="%" min="0" reversed="false" step="1" max="100"/>
 
 		<seekBar description="After spending sampling_down_factor*sampling_rate micro seconds at maximum frequency on high load, governor samples the load again to calculate an approx target frequency to scale-down-to which should not trigger up_threshold in the next sample. (Triggering up threshold may cause jumping to max frequency again). Max_load_freq is checked against (up_threshold - down_differential) * current frequency. If found to be smaller, CPU is scaled down to a target frequency as described above. Down_differential also act as the factor to prevent aggressive scale down. (Only for HYPER, Ondemand, Intellimand, PegasusQ, Sleepy) (Default: 5)"
 			name="down_differential_sleep" action="generic_cortex /tmp/down_differential_sleep" unit="int" min="1" reversed="false" step="1" max="80"/>
 
-		<seekBar description="Until freq_for_responsiveness, Up Threshold considered for sampling load is up_threshold_at_min_freq. Also during the part where CPU is at maximum load frequency, governor need to find the optimal frequency as the next frequency - which should not trigger up_threshold in the next sampling. When such a frequency_next is found to be a) less than freq_for_responsiveness b) will not trigger down_threshold in the next sample, then the optimal frequency is set to freq_for_responsiveness. (Only for HYPER, PegasusQ, Nightmare) (Default: 200.000 kHz)"
+		<seekBar description="Until freq_for_responsiveness, Up Threshold considered for sampling load is up_threshold_at_min_freq. Also during the part where CPU is at maximum load frequency, governor need to find the optimal frequency as the next frequency - which should not trigger up_threshold in the next sampling. When such a frequency_next is found to be a) less than freq_for_responsiveness b) will not trigger down_threshold in the next sample, then the optimal frequency is set to freq_for_responsiveness. (Only for HYPER, PegasusQ, Nightmare) (Default: 400.000 kHz)"
 			name="freq_for_responsiveness_sleep" action="generic_cortex /tmp/freq_for_responsiveness_sleep" unit="kHz" min="100000" reversed="false" step="100000" max="1000000"/>
 
 		<seekBar description="This is same as the 'up_threshold' found for the Ondemand governor but for the opposite direction. For example when set to its default value of 30 it means that if the CPU usage needs to be below 30% between samples to have the frequency decreased. (Only for Conservative, Scary) (Default: 30%)"
@@ -312,10 +312,10 @@
 
 	<settingsPane description="Nightmare Gov Configuration, see descriptions" name="NIGHTMARE GOV CONFIGURATON">
 
-		<seekBar description="The frequency at which governor scales CPU up. Load 'big or equal' inc_cpu_load: cpu scaled up. (Default: 80%)"
+		<seekBar description="The frequency at which governor scales CPU up. Load 'big or equal' inc_cpu_load: cpu scaled up. (Default: 70%)"
 			name="inc_cpu_load_sleep" action="generic_cortex /tmp/inc_cpu_load_sleep" unit="%" min="10" reversed="false" step="1" max="100"/>
 
-		<seekBar description="The frequency at which governor scales CPU down. Load less than inc_cpu_load: cpu scaled down. (Default: 70%)"
+		<seekBar description="The frequency at which governor scales CPU down. Load less than inc_cpu_load: cpu scaled down. (Default: 60%)"
 			name="dec_cpu_load_sleep" action="generic_cortex /tmp/dec_cpu_load_sleep" unit="%" min="10" reversed="false" step="1" max="100"/>
 
 		<seekBar description="Acts as a multiplier for sampling interval for re-evaluating the load when CPU is truly busy and is on highest clock frequency (policy max). (Only for Nightmare) (Default: 1)"
@@ -327,10 +327,10 @@
 		<seekBar description="cpu load and freq_step_dec will be multiplied by freq_for_calc_decr. It defines how much the frequency decrement is during cpu scaling! It has been configured to 200.000 kHz. If you don't know what it means, please don't change it! (Only for Nightmare) (Default 200.000 kHz"
 			name="freq_for_calc_decr_sleep" action="generic_cortex /tmp/freq_for_calc_decr_sleep" unit="kHz" min="200000" reversed="false" step="100000" max="400000"/>
 
-		<seekBar description="Defines how much as a percentage of maximum frequency, governor should decrease CPU frequency each time CPU load reaches dec_cpu_load. (Only for Nightmare) (Default: 15%)"
+		<seekBar description="Defines how much as a percentage of maximum frequency, governor should decrease CPU frequency each time CPU load reaches dec_cpu_load. (Only for Nightmare) (Default: 10%)"
 			name="freq_step_dec_sleep" action="generic_cortex /tmp/freq_step_dec_sleep" unit="%" min="0" reversed="false" step="1" max="100"/>
 
-		<seekBar description="Brake scale up frequency when load 'big or equal' inc_cpu_load. (Only for Nightmare) (Default: 15%)"
+		<seekBar description="Brake scale up frequency when load 'big or equal' inc_cpu_load. (Only for Nightmare) (Default: 30%)"
 			name="freq_up_brake_sleep" action="generic_cortex /tmp/freq_up_brake_sleep" unit="step" min="0" reversed="false" step="1" max="100"/>
 
 		<seekBar description="This threshold is used as up threshold while sampling at frequencies less than freq_for_responsiveness. Above that, normal inc_cpu_load is used. This gives us an option to make scaling aggressive/relaxed until a frequency and normal for higher frequencies. Again, during calculation of optimal frequency which should not trigger up policy, down threshold to consider is difference between inc_cpu_load_at_min_freq and freq_up_brake. (Only for Nightmare) (Default: 60%)"
@@ -342,7 +342,7 @@
 		<seekBar description="When 2nd core is online, if frequency of 1st core is less than freq_min and load average is less than trans_load_l1_scroff, 2nd core will turn off. (Only for Nightmare) (Default: 20%)"
 			name="trans_load_l1_scroff" action="generic_cortex /tmp/trans_load_l1_scroff" unit="%" min="1" reversed="false" step="1" max="100"/>
 
-		<seekBar description="When 2nd core is online, if rq_min less than trans_rq_sleep and it's load is less than trans_load_rq_sleep, 2nd core will turn off. (Only for Nightmare) (Default: 10%)"
+		<seekBar description="When 2nd core is online, if rq_min less than trans_rq_sleep and it's load is less than trans_load_rq_sleep, 2nd core will turn off. (Only for Nightmare) (Default: 20%)"
 			name="trans_load_rq_sleep" action="generic_cortex /tmp/trans_load_rq_sleep" unit="%" min="0" reversed="false" step="1" max="50"/>
 
 		<seekBar description="When 2nd core is online, if rq_min less than trans_rq_sleep and it's load is less than trans_load_rq_sleep, 2nd core will turn off. (Only for Nightmare) (Default: 2)"
@@ -845,6 +845,7 @@
 
 		<spinner description="WIFI supplicant scan interval. Here you can set the time in sec for WIFI to look for access points when ON. Higher the range, less battery used by WIFI! If you want WIFI to be forced OFF on screen OFF, Turn Force WIFI OFF Tweak in Cortex TAB, also if cortex process is ON, then it will be set automatically to 360sec on Screen OFF, so set your range for screen ON!"
 			name="WIFI supplicant scan interval" action="supplicant_scan_interval">
+			<spinnerItem name="Set WIFI SCAN 15Sec(default)" value="15"/> 
 			<spinnerItem name="Set WIFI SCAN 60Sec" value="60"/> 
 			<spinnerItem name="Set WIFI SCAN 120Sec" value="120"/> 
 			<spinnerItem name="Set WIFI SCAN 180Sec" value="180"/> 

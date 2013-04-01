@@ -35,6 +35,7 @@ $BB chown -R root:system /sys/devices/system/cpu/;
 $BB chmod -R 0777 /sys/devices/system/cpu/;
 $BB chown -R system:system /data/anr;
 $BB chmod -R 0777 /data/anr/;
+$BB chmod 444 /proc/cmdline;
 
 MIUI_JB=0;
 JELLY=0;

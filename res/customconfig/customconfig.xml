@@ -843,16 +843,6 @@
 
 	<settingsPane description="WIFI Settings" name="WIFI">
 
-		<spinner description="WIFI supplicant scan interval. Here you can set the time in sec for WIFI to look for access points when ON. Higher the range, less battery used by WIFI! If you want WIFI to be forced OFF on screen OFF, Turn Force WIFI OFF Tweak in Cortex TAB, also if cortex process is ON, then it will be set automatically to 360sec on Screen OFF, so set your range for screen ON!"
-			name="WIFI supplicant scan interval" action="supplicant_scan_interval">
-			<spinnerItem name="Set WIFI SCAN 15Sec(default)" value="15"/> 
-			<spinnerItem name="Set WIFI SCAN 60Sec" value="60"/> 
-			<spinnerItem name="Set WIFI SCAN 120Sec" value="120"/> 
-			<spinnerItem name="Set WIFI SCAN 180Sec" value="180"/> 
-			<spinnerItem name="Set WIFI SCAN 240Sec" value="240"/> 
-			<spinnerItem name="Set WIFI SCAN 360Sec" value="360"/> 
-		</spinner>
-
 		<button description="Clean WIFI DHCP IP Lease. Push the button to activate!" name="Clean WIFI Lease" action="push-actions/fix_wifi" label="Clean WIFI Lease"/>
 
 	</settingsPane>

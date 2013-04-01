@@ -598,34 +598,8 @@ if [ "$cortexbrain_ksm_control" == on ]; then
 fi;
 
 # ==============================================================
-# SCREEN-FUNCTIONS
+# GLOBAL-FUNCTIONS
 # ==============================================================
-
-WIFI_PM()
-{
-	local state="$1";
-	if [ "${state}" == "sleep" ]; then
-		#if [ "$wifi_pwr" == on ]; then
-		#	if [ -e /sys/module/dhd/parameters/wifi_pm ]; then
-		#		echo "1" > /sys/module/dhd/parameters/wifi_pm;
-		#	fi;
-		#fi;
-
-		if [ "$supplicant_scan_interval" -le 180 ]; then
-			setprop wifi.supplicant_scan_interval 240;
-		else
-			setprop wifi.supplicant_scan_interval $supplicant_scan_interval;
-		fi;
-	elif [ "${state}" == "awake" ]; then
-		#if [ -e /sys/module/dhd/parameters/wifi_pm ]; then
-		#	echo "0" > /sys/module/dhd/parameters/wifi_pm;
-		#fi;
-
-		setprop wifi.supplicant_scan_interval $supplicant_scan_interval;
-	fi;
-
-	log -p i -t $FILE_NAME "*** WIFI_PM ***: ${state}";
-}
 
 WIFI_SET()
 {
@@ -651,7 +625,6 @@ WIFI()
 	local state="$1";
 
 	if [ "${state}" == "sleep" ]; then
-		WIFI_PM "sleep";
 		if [ "$cortexbrain_auto_tweak_wifi" == on ]; then
 			if [ -e /sys/module/dhd/initstate ]; then
 				if [ "$cortexbrain_auto_tweak_wifi_sleep_delay" == 0 ]; then
@@ -678,7 +651,6 @@ WIFI()
 			fi;
 		fi;
 	elif [ "${state}" == "awake" ]; then
-		WIFI_PM "awake";
 		if [ "$cortexbrain_auto_tweak_wifi" == on ]; then
 			echo "1" > $wifi_helper_tmp;
 			if [ `cat $wifi_helper_awake` == 1 ]; then

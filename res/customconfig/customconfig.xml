@@ -110,11 +110,11 @@
 
 		<button description="Use this button to see what CPU Voltage is used right now! if you see voltage different from what set as defaults! then your device has OLD CPU model! that uses different STATIC voltage table! and BEST for you, not to UV/OV EVER! just forget it! you will get SODS and cry about it." name="Check Active CPU Voltage" action="push-actions/check_cpu_voltage" label="Check CPU Voltage"/>
 
-		<seekBar description="CPU Voltage for 1600 MHz. (Default: 1400 mV)"
-			name="CPU Voltage 1600 MHz" action="cpu-voltage 1" unit="mV" min="1300" reversed="false" step="25" max="1500"/>
+		<seekBar description="CPU Voltage for 1600 MHz. (Default: 1425 mV)"
+			name="CPU Voltage 1600 MHz" action="cpu-voltage 1" unit="mV" min="1325" reversed="false" step="25" max="1500"/>
 
-		<seekBar description="CPU Voltage for 1500 MHz. (Default: 1375 mV)"
-			name="CPU Voltage 1500 MHz" action="cpu-voltage 2" unit="mV" min="1275" reversed="false" step="25" max="1475"/>
+		<seekBar description="CPU Voltage for 1500 MHz. (Default: 1400 mV)"
+			name="CPU Voltage 1500 MHz" action="cpu-voltage 2" unit="mV" min="1300" reversed="false" step="25" max="1500"/>
 
 		<seekBar description="CPU Voltage for 1400 MHz. (Default: 1325 mV)"
 			name="CPU Voltage 1400 MHz" action="cpu-voltage 3" unit="mV" min="1225" reversed="false" step="25" max="1425"/>
@@ -366,16 +366,15 @@
 
 	<settingsPane description="Here you can tune I/O settings managed by Kernel" name="I/O Tuning">
 
-		<spinner description="Maximum number of kilobytes to read-ahead for file systems on this block device. Maybe get better read-performance with higher value, but you will probably need to experiment and benchmark (e.g. with SD Tools-App) to find the best value for your sd-card / system and maybe you will have a higher overhead (less memory) with a higher value. Works only if 'I/O-Tweaks' tweak is enabled! (Default: 128 kB)"
+		<spinner description="Maximum number of kilobytes to read-ahead for EXTERNAL SDCARD! file systems on this device. Best to leave it AUTO, then script will detect your external sdcard size and set the best value for it! the INTERNAL sdcard will get 1024kB as default and best for 16GB storage, Works only if 'I/O-Tweaks' tweak is enabled! (Default: 128 kB)"
 			name="kilobytes to read-ahead" action="generic_cortex /tmp/cortexbrain_read_ahead_kb">
-			<spinnerItem name="64 kB" value="64"/> 
+			<spinnerItem name="AUTO" value="0"/> 
 			<spinnerItem name="128 kB" value="128"/> 
 			<spinnerItem name="256 kB" value="256"/> 
 			<spinnerItem name="512 kB" value="512"/> 
 			<spinnerItem name="1024 kB" value="1024"/> 
 			<spinnerItem name="2048 kB" value="2048"/> 
 			<spinnerItem name="2560 kB" value="2560"/> 
-			<spinnerItem name="4096 kB" value="4096"/> 
 		</spinner>
 
 		<spinner description="This will set the default AWAKE I/O scheduler for internal, system, data and external sdcard. For best stability use ROW. (Default: ROW)"
@@ -433,10 +432,10 @@
 		</spinner>
 
 		<seekBar description="Dirty background memory buffer, more you set, more memory will be used for write buffer for background operations. Buffer is released on need to free RAM (Default: 10%)"
-			name="Dirty Background ratio" action="generic /proc/sys/vm/dirty_background_ratio" unit="%" min="5" reversed="false" step="5" max="25"/>
+			name="Dirty Background ratio" action="generic /proc/sys/vm/dirty_background_ratio" unit="%" min="5" reversed="false" step="5" max="80"/>
 
-		<seekBar description="Dirty real time memory buffer, more you set, more memory will be used for write buffer for real time operations. Buffer is released on need to free RAM (Default: 10%)"
-			name="Dirty ratio" action="generic /proc/sys/vm/dirty_ratio" unit="%" min="5" reversed="false" step="5" max="50"/>
+		<seekBar description="Dirty real time memory buffer, more you set, more memory will be used for write buffer for real time operations. Buffer is released on need to free RAM (Default: 15%)"
+			name="Dirty ratio" action="generic /proc/sys/vm/dirty_ratio" unit="%" min="5" reversed="false" step="5" max="90"/>
 
 		<button description="Clean RAM Cache. This will release all cached and buffered RAM" name="CLEAN RAM CACHE" action="push-actions/clean_ram_cache" label="CLEAN RAM CACHE NOW"/>
 

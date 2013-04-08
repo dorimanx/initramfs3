@@ -1,7 +1,7 @@
 #!/sbin/busybox sh
 
-WGET_CHECK1=`ls /system/xbin/wget | wc -l` > /dev/null 2>&1`;
-WGET_CHECK2=`ls /system/bin/wget | wc -l` > /dev/null 2>&1`;
+WGET_CHECK1=`ls /system/xbin/wget | wc -l` > /dev/null 2>&1;
+WGET_CHECK2=`ls /system/bin/wget | wc -l` > /dev/null 2>&1;
 
 if [ "$WGET_CHECK1" == 1 ] || [ "$WGET_CHECK2" == 1 ]; then
 

@@ -2,16 +2,6 @@
 
 BB=/sbin/busybox
 
-extract_payload()
-{
-  	$BB chmod 755 /sbin/read_boot_headers;
-  	eval $(/sbin/read_boot_headers /dev/block/mmcblk0p5);
-  	load_offset=$boot_offset;
-  	load_len=$boot_len;
-  	cd /;
-  	dd bs=512 if=/dev/block/mmcblk0p5 skip=$load_offset count=$load_len | tar x;
-}
-
 . /res/customconfig/customconfig-helper;
 read_defaults;
 read_config;
@@ -45,8 +35,14 @@ if [ -e /system/app/Superuser.apk ]; then
 	NEW_SU=1;
 fi;
 
+NEED_SU=1;
+if [ -e /tmp/cm10.1-installed ]; then
+	NEED_SU=0;
+	$BB rm /tmp/cm10.1-installed;
+fi;
+
 if [ "$install_root" == "on" ]; then
-	if [ -e /system/xbin/su ] && [ "$NEW_SU" == "0" ]; then
+	if [ -e /system/xbin/su ] && [ "$NEW_SU" == "0" ] || [ "$NEED_SU" == 0 ]; then
 		echo "SuperSU already exists and updated";
 	else
 		# clean su traces
@@ -113,17 +109,6 @@ if [ "$install_root" == "on" ]; then
 		pkill -f "com.noshufou.android.su";
 		pkill -f "eu.chinfire.supersu";
 	fi;
-fi;
-
-if [ ! -e /system/app/CWMManager.apk ]; then
-	$BB rm -f /data/app/CWMManager.apk > /dev/null 2>&1;
-	$BB rm -f /data/dalvik-cache/*CWMManager.apk* > /dev/null 2>&1;
-	$BB rm -f /data/app/eu.chainfire.cfroot.cwmmanager*.apk > /dev/null 2>&1;
-	$BB rm -rf /data/data/eu.chainfire.cfroot.cwmmanage* > /dev/null 2>&1;
-
-	$BB cp -a /res/misc/payload/CWMManager.apk /system/app/CWMManager.apk;
-	$BB chown 0.0 /system/app/CWMManager.apk;
-	$BB chmod 644 /system/app/CWMManager.apk;
 fi;
 
 # liblights install by force to allow BLN

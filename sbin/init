@@ -65,7 +65,7 @@ mknod /dev/input/event9 c 13 73
 mknod /dev/ashmem c 10 61
 mknod /dev/block/mmcblk0p1 b 179 1
 mknod /dev/block/mmcblk0p7 b 179 7
-mknod /dev/block/mmcblk1p1 b 179 25
+mknod /dev/block/mmcblk1p1 b 179 9
 mknod /dev/block/mmcblk0p9 b 259 1
 mknod /dev/block/mmcblk0p10 b 259 2
 mknod /dev/block/mmcblk0p11 b 259 3
@@ -77,9 +77,33 @@ $BB mount -t ext4 -o rw /dev/block/mmcblk0p12 /preload;
 
 # prevent from media storage to dig in clockworkmod backup dir
 $BB mount -t vfat /dev/block/mmcblk0p11 /mnt/tmp && ( mkdir -p /mnt/tmp/clockworkmod/blobs/ ) && ( touch /mnt/tmp/clockworkmod/.nomedia ) && ( touch /mnt/tmp/clockworkmod/blobs/.nomedia );
-$BB mount -t vfat /dev/block/mmcblk1p1 /mnt/tmp2 && ( mkdir -p /mnt/tmp2/clockworkmod/blobs/ ) && ( touch /mnt/tmp2/clockworkmod/.nomedia ) && ( touch /mnt/tmp2/clockworkmod/blobs/.nomedia );
-#umount only the external sd
-$BB umount -l /mnt/tmp2;
+
+if [ -e /dev/block/mmcblk1p1 ]; then
+	$BB mount -t vfat /dev/block/mmcblk1p1 /mnt/tmp2 && ( mkdir -p /mnt/tmp2/clockworkmod/blobs/ ) && ( touch /mnt/tmp2/clockworkmod/.nomedia ) && ( touch /mnt/tmp2/clockworkmod/blobs/.nomedia );
+
+	SDCARD_SIZE1=`$BB df | $BB grep /dev/block/mmcblk1p1 | $BB cut -c 23-30`
+	SDCARD_SIZE4=`$BB df | $BB grep /dev/block/mmcblk1p1 | $BB cut -c 23-30`
+	SDCARD_SIZE8=`$BB df | $BB grep /dev/block/mmcblk1p1 | $BB cut -c 23-30`
+	SDCARD_SIZE16=`$BB df | $BB grep /dev/block/mmcblk1p1 | $BB cut -c 23-30`
+	SDCARD_SIZE32=`$BB df | $BB grep /dev/block/mmcblk1p1 | $BB cut -c 23-30`
+	SDCARD_SIZE64=`$BB df | $BB grep /dev/block/mmcblk1p1 | $BB cut -c 23-30`
+	if [ "$SDCARD_SIZE1" -lt "1000000" ]; then
+		echo "1" > /tmp/sdcard_size;
+	elif [ "$SDCARD_SIZE4" -lt "4000000" ]; then
+		echo "4" > /tmp/sdcard_size;
+	elif [ "$SDCARD_SIZE8" -lt "8000000" ]; then
+		echo "8" > /tmp/sdcard_size;
+	elif [ "$SDCARD_SIZE16" -lt "16000000" ]; then
+		echo "16" > /tmp/sdcard_size;
+	elif [ "$SDCARD_SIZE32" -lt "32000000" ]; then
+		echo "32" > /tmp/sdcard_size;
+	elif [ "$SDCARD_SIZE64" -lt "64000000" ]; then
+		echo "64" > /tmp/sdcard_size;
+	fi;
+
+	#umount only the external sd
+	$BB umount -l /mnt/tmp2;
+fi;
 
 # dual boot check and run
 if [ -e /mnt/tmp/.nextboot ]; then
@@ -234,7 +258,6 @@ JBSAMMY2=`ls /system/lib/lib_Samsung_Resampler.so | wc -l`;
 B2G=`$BB ls /system/b2g | wc -l`;
 JELLY=`$BB ls /system/lib/ssl/engines/libkeystore.so | wc -l`;
 # has to be negative! for SAMMY ICS ROM to get his init files.
-AOSP=`$BB ls /system/framework/framework2.jar | wc -l`;
 CM_AOKP_10_JB=`$BB ls /system/bin/wfd | wc -l`;
 
 # one more time set "/" rw just for good sleep
@@ -346,18 +369,10 @@ PARTITION_TUNING()
 
 USER_ACTIONS()
 {
-	if [ "$JELLY" == "1" ] || [ "$MIUI_JB" == "1" ] || [ "$CM_AOKP_10_JB" == "1" ] || [ "$JBSAMMY" == "1" ]; then
+	if [ "$JBSAMMY" == "1" ]; then
 		stop adbd;
-
-		if [ "$JBSAMMY" == "0" ]; then
-			if [ "$CM_AOKP_10_JB" == "1" ] || [ "$JELLY" == "1" ]; then
-				$BB cp -a /sbin/adbd.cm10-1 /sbin/adbd;
-				$BB chmod 755 /sbin/adbd;
-			fi;
-		else
-			$BB cp -a /sbin/adbd.jb /sbin/adbd;
-			$BB chmod 755 /sbin/adbd;
-		fi;
+		$BB cp -a /sbin/adbd.jb /sbin/adbd;
+		$BB chmod 755 /sbin/adbd;
 	fi;
 
 	# only if asked by user via stweaks
@@ -397,12 +412,6 @@ BOOTROM()
 	USER_ACTIONS;
 	$BB rm -f /sbin/mount;
 	exec /sbin/init.samsung;
-}
-
-POWER_SQL_ICS()
-{
-	$BB cp -a /res/misc/sql/ics/libsqlite.so /system/lib/libsqlite.so;
-	$BB chmod 755 /system/lib/libsqlite.so;
 }
 
 POWER_SQL_JB()
@@ -477,6 +486,7 @@ elif [ "$CM_AOKP_10_JB_CARBON" == "1" ]; then
 	echo "3" > /proc/sys/kernel/rom_feature_set;
 	$BB cp -a /res/misc/JellyB-CM-AOKP-10.1/* /;
 	$BB cp -a /res/misc/JellyB-CM-AOKP-CARBON/* /;
+	touch /tmp/cm10.1-installed;
 
 	SECROM_FUNCTION_AOSP;
 
@@ -485,6 +495,7 @@ elif [ "$CM_AOKP_10_JB" == "1" ]; then
 	POWER_SQL_JB;
 	echo "3" > /proc/sys/kernel/rom_feature_set;
 	$BB cp -a /res/misc/JellyB-CM-AOKP-10.1/* /;
+	touch /tmp/cm10.1-installed;
 
 	SECROM_FUNCTION_AOSP;
 
@@ -496,13 +507,6 @@ elif [ "$JELLY" == "1" ] || [ "$MIUI_JB" == "1" ]; then
 
 	SECROM_FUNCTION_AOSP;
 
-elif [ "$AOSP" == "0" ]; then
-	# Injecting ICS Modded by Dorimanx, SUPER libsqlite!
-	POWER_SQL_ICS;
-	echo "1" > /proc/sys/kernel/rom_feature_set;
-	$BB cp -a /res/misc/CM-ROM/* /;
-
-	SECROM_FUNCTION_AOSP;
 else
 	if [ "$KERNEL_9X" == "1" ]; then
 		echo "wrong kernel" > /tmp/wrong_kernel;

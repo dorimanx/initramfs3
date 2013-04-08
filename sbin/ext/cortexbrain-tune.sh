@@ -87,37 +87,33 @@ IO_TWEAKS()
 				echo "0" > $i/queue/iostats;
 			fi;
 
-			if [ -e $i/queue/read_ahead_kb ]; then
-				echo "$cortexbrain_read_ahead_kb" >  $i/queue/read_ahead_kb; # default: 128
+			if [ -e $i/queue/nr_requests ]; then
+				echo "64" > $i/queue/nr_requests; # default: 128
 			fi;
+		done;
 
-			if [ "$scheduler" == "sio" ] || [ "$scheduler" == "zen" ]; then
-				if [ -e $i/queue/nr_requests ]; then
-					echo "64" > $i/queue/nr_requests; # default: 128
+		# our storage is 16GB, best is 1024KB readahead
+		# see https://github.com/Keff/samsung-kernel-msm7x30/commit/a53f8445ff8d947bd11a214ab42340cc6d998600#L1R627
+		echo "1024" > /sys/block/mmcblk0/queue/read_ahead_kb;
+
+		if [ -e /sys/block/mmcblk1/queue/read_ahead_kb ]; then
+			if [ "$cortexbrain_read_ahead_kb" == 0 ]; then
+				SDCARD_SIZE=`cat /tmp/sdcard_size`
+				if [ "$SDCARD_SIZE" == 1 ]; then
+					echo "256" > /sys/block/mmcblk1/queue/read_ahead_kb;
+				elif [ "$SDCARD_SIZE" == 4 ]; then
+					echo "512" > /sys/block/mmcblk1/queue/read_ahead_kb;
+				elif [ "$SDCARD_SIZE" == 8 ] || [ "$SDCARD_SIZE" == 16 ]; then
+					echo "1024" > /sys/block/mmcblk1/queue/read_ahead_kb;
+				elif [ "$SDCARD_SIZE" == 32 ]; then
+					echo "2048" > /sys/block/mmcblk1/queue/read_ahead_kb;
+				elif [ "$SDCARD_SIZE" == 64 ]; then
+					echo "2560" > /sys/block/mmcblk1/queue/read_ahead_kb;
 				fi;
+			else
+				echo "$cortexbrain_read_ahead_kb" > /sys/block/mmcblk1/queue/read_ahead_kb;
 			fi;
-
-			if [ -e $i/queue/iosched/back_seek_penalty ]; then
-				echo "1" > $i/queue/iosched/back_seek_penalty; # default: 2
-			fi;
-
-			if [ -e $i/queue/iosched/slice_idle ]; then
-				echo "2" > $i/queue/iosched/slice_idle; # default: 8
-			fi;
-
-			if [ -e $i/queue/iosched/fifo_batch ]; then
-				echo "1" > $i/queue/iosched/fifo_batch;
-			fi;
-		done;
-
-		if [ -e /sys/devices/virtual/bdi/default/read_ahead_kb ]; then
-			echo "$cortexbrain_read_ahead_kb" > /sys/devices/virtual/bdi/default/read_ahead_kb;
 		fi;
-
-		local SDCARDREADAHEAD=`ls -d /sys/devices/virtual/bdi/179*`;
-		for i in $SDCARDREADAHEAD; do
-			echo "$cortexbrain_read_ahead_kb" > $i/read_ahead_kb;
-		done;
 
 		echo "45" > /proc/sys/fs/lease-break-time;
 #		echo "289585" > /proc/sys/fs/file-max;
@@ -760,8 +756,8 @@ MOUNT_SD_CARD()
 {
 	if [ "$auto_mount_sd" == on ]; then
 		echo "/dev/block/vold/259:3" > /sys/devices/virtual/android_usb/android0/f_mass_storage/lun0/file;
-		if [ -e /dev/block/vold/179:25 ]; then
-			echo "/dev/block/vold/179:25" > /sys/devices/virtual/android_usb/android0/f_mass_storage/lun1/file;
+		if [ -e /dev/block/vold/179:9 ]; then
+			echo "/dev/block/vold/179:9" > /sys/devices/virtual/android_usb/android0/f_mass_storage/lun1/file;
 		fi;
 
 		log -p i -t $FILE_NAME "*** MOUNT_SD_CARD ***";

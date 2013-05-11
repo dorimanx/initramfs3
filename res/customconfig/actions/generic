@@ -5,7 +5,7 @@
 
 if [ "a$2" != "a" ]; then
 
-	filename=$(basename $2);
+	filename=$(basename "$2");
 
 	if [ "a$3" == "a" ]; then
 		evalcmd='eval "echo \$$filename"';

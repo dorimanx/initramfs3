@@ -9,16 +9,16 @@ BB=/sbin/busybox
 $BB chmod -R 777 /tmp/;
 $BB chmod 6755 /sbin/ext/*;
 
+mount -o remount,rw,nosuid,nodev,discard /cache;
+mount -o remount,rw,nosuid,nodev,discard /data;
+mount -o remount,rw /system;
+
 # remount all partitions tweked settings
-for m in $($BB mount | grep ext[3-4] | cut -d " " -f3); do
-	$BB mount -o remount,noatime,nodiratime,noauto_da_alloc,barrier=0 $m;
+for m in $(mount | grep ext[3-4] | cut -d " " -f1); do
+	mount -o remount,noatime,nodiratime,noauto_da_alloc,barrier=0 $m;
 done;
 
-$BB mount -o remount,rw,nosuid,nodev,discard,journal_async_commit /cache;
-$BB mount -o remount,rw,nosuid,nodev,discard /data;
-$BB mount -o remount,rw /system;
-
-$BB mount -t rootfs -o remount,rw rootfs;
+mount -t rootfs -o remount,rw rootfs;
 
 # cleaning
 $BB rm -rf /cache/lost+found/* 2> /dev/null;
@@ -26,7 +26,6 @@ $BB rm -rf /data/lost+found/* 2> /dev/null;
 $BB rm -rf /data/tombstones/* 2> /dev/null;
 $BB rm -rf /data/anr/* 2> /dev/null;
 $BB chmod -R 400 /data/tombstones;
-$BB chown -R drm:drm /data/tombstones;
 
 # critical Permissions fix
 $BB chmod -R 0777 /dev/cpuctl/;
@@ -35,7 +34,7 @@ $BB chown -R root:system /sys/devices/system/cpu/;
 $BB chmod -R 0777 /sys/devices/system/cpu/;
 $BB chown -R system:system /data/anr;
 $BB chmod -R 0777 /data/anr/;
-$BB chmod 444 /proc/cmdline;
+$BB chmod 744 /proc/cmdline;
 
 MIUI_JB=0;
 JELLY=0;
@@ -70,6 +69,15 @@ SDCARD_FIX()
 	$BB echo "DONE" >> $LOG_SDCARDS;
 }
 
+BOOT_ROM()
+{
+	# Start ROM VM boot!
+	start;
+
+	# start adb shell
+	start adbd;
+}
+
 if [ -e /tmp/wrong_kernel ]; then
 	mv /res/images/wrong_kernel.png /res/images/icon_clockwork.png;
 	/sbin/choose_rom 0;
@@ -78,19 +86,13 @@ if [ -e /tmp/wrong_kernel ]; then
 	$BB rm -f /tmp/wrong_kernel;
 	reboot;
 else
-	# Start ROM VM boot!
-	start;
-
-	# start adb shell
-	start adbd;
-
-	if [ "$MIUI_JB" == "1" ] || [ "$JELLY" == "1" ] || [ "$JBSAMMY" == "1" ] || [ "$CM_AOKP_10_JB" == "1" ]; then
-		SDCARD_FIX;
-	elif [ -e /system/bin/fsck_msdos ]; then
+	if [ -e /system/bin/fsck_msdos ]; then
 		FIX_BINARY=/system/bin/fsck_msdos
+		BOOT_ROM;
 		SDCARD_FIX;
 	else
-		$BB echo "CANT FIX SDCARDS, REPORT TO DM" > $LOG_SDCARDS;
+		BOOT_ROM;
+		SDCARD_FIX;
 	fi;
 fi;
 

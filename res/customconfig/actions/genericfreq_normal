@@ -5,13 +5,13 @@ if [ "a$2" != "a" ]; then
 	PROFILE=`cat /data/.siyah/.active.profile`;
 	. /data/.siyah/$PROFILE.profile;
 
-	filename=$(basename $2);
+	filename=$(basename "$2");
 
 	if [ "a$3" == "a" ]; then
 		evalcmd='eval "echo \$$filename"';
 		eval $evalcmd;
 	else
-		newfreq=$3;
+		newfreq="$3";
 		evalcmd='eval "$filename=$newfreq"';
 		eval $evalcmd;
 		evalcmd='eval "echo \$$filename"';

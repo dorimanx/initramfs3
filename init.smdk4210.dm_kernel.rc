@@ -6,6 +6,8 @@ on boot
 # Need for Sound changes and other stuff, found by GM!
     mount debugfs /sys/kernel/debug /sys/kernel/debug
 
+    chmod 0444 /sys/module/lowmemorykiller/parameters/adj
+
 on fs
 
 # Tweaks For ROM

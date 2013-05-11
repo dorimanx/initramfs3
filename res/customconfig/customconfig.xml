@@ -25,30 +25,11 @@
 		<seekBar description="Minimum CPU-Speed. CPU Frequency step by 100.000 kHz are valid from 100.000 kHz to 1.000.000 kHz! (Default: 200.000 kHz)" 
 			name="Min Frequency" action="genericfreq /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq" unit="kHz" min="100000" reversed="false" step="100000" max="1000000"/>
 
-		<spinner description="When you touch the screen, CPU frequency will jump to 500.000 kHz. Here you can enable Dynamic Touch Mode, 500Mhz / 10 * running tasks, if not many running tasks, then the frequency won't change to higher, but if heavy loaded then this can help scrolling. (Default: OFF)"
+		<spinner description="When you touch the screen, CPU frequency will jump to 500.000 kHz. Here you can enable Dynamic Touch Mode, 500Mhz / 5 * (running tasks * 2), if not many running tasks, then the frequency won't change to higher, but if heavy loaded then this can help scrolling. (Default: OFF)"
 			name="Dynamic Touch  Mode" action="generic /sys/devices/virtual/sec/sec_touchscreen/tsp_touch_dyn">
 			<spinnerItem name="on" value="1"/> 
 			<spinnerItem name="off" value="0"/> 
 		</spinner>
-
-		<seekBar description="Minimum Frequency until second core will not be turned on, regardless of thresholds. (Default: 500.000 kHz)" 
-			name="Min Frequency for 2-core" action="genericfreq /sys/module/stand_hotplug/parameters/freq_min" 
-			unit="kHz" min="100000" reversed="false" step="100000" max="1000000"/>
-
-		<seekBar description="The second core will be enabled when the load goes above this threshold. If threshold is set above 24, and you have 800MHz as MAX, second core will not turn ON! If you set MAX CPU frequency lower than 800MHz, second core will be DISABLED! (Default: 20)" 
-			name="load_h0" action="generic /sys/module/stand_hotplug/parameters/load_h0" unit="%" min="5" reversed="false" step="1" max="30"/>
-
-		<seekBar description="Second core will be disabled when the load goes below this threshold. (Default: 20)" 
-			name="load_l1" action="generic /sys/module/stand_hotplug/parameters/load_l1" unit="%" min="5" reversed="false" step="1" max="50"/>
-
-		<seekBar description="Default: 2" 
-			name="min_rq" action="generic /sys/module/stand_hotplug/parameters/min_rq" unit="" min="0" reversed="false" step="1" max="2"/>
-
-		<seekBar description="Default: 20" 
-			name="load_rq" action="generic /sys/module/stand_hotplug/parameters/load_rq" unit="%" min="5" reversed="false" step="1" max="35"/>
-
-		<seekBar description="Sets hot plug sampling intervals for screen-on state. (Default: 100)" 
-			name="rate" action="generic /sys/module/stand_hotplug/parameters/rate" unit=" jiffies" min="100" reversed="false" step="100" max="1000"/>
 
 	</settingsPane>
 
@@ -171,6 +152,8 @@
 			name="Default CPU Governor" action="generic /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor">
 			<spinnerItem name="conservative" value="conservative"/> 
 			<spinnerItem name="HYPER" value="HYPER"/> 
+			<spinnerItem name="zzmoove" value="zzmoove"/> 
+			<spinnerItem name="interactive" value="interactive"/> 
 			<spinnerItem name="intellidemand" value="intellidemand"/> 
 			<spinnerItem name="nightmare" value="nightmare"/> 
 			<spinnerItem name="ondemand" value="ondemand"/> 
@@ -237,18 +220,6 @@
 		<seekBar description="This threshold is used as up threshold while sampling at frequencies less than freq_for_responsiveness. Above that, normal inc_cpu_load is used. This gives us an option to make scaling aggressive/relaxed until a frequency and normal for higher frequencies. Again, during calculation of optimal frequency which should not trigger up policy, down threshold to consider is difference between inc_cpu_load_at_min_freq and freq_up_brake. (Only for Nightmare) (Default: 60%)"
 			name="inc_cpu_load_at_min_freq" action="generic_cortex /tmp/inc_cpu_load_at_min_freq" unit="%" min="1" reversed="false" step="1" max="100"/>
 
-		<seekBar description="When 2nd core is offline, If frequency of 1st core is 'big or equal' freq_min and load average is 'big or equal' trans_load_h0 2nd core will turn on. (Only for Nightmare) (Default: 20%)"
-			name="trans_load_h0" action="generic_cortex /tmp/trans_load_h0" unit="%" min="1" reversed="false" step="1" max="100"/>
-
-		<seekBar description="When 2nd core is online, If frequency of 1st core is less than freq_min and load average is less than trans_load_l1, 2nd core will turn off. (Default: 20%)"
-			name="trans_load_l1" action="generic_cortex /tmp/trans_load_l1" unit="%" min="1" reversed="false" step="1" max="100"/>
-
-		<seekBar description="When 2nd core is online, if rq_min less than trans_rq and it's load is less than trans_load_rq, 2nd core will turn off. (Only for Nightmare) (Default: 20%)"
-			name="trans_load_rq" action="generic_cortex /tmp/trans_load_rq" unit="%" min="0" reversed="false" step="1" max="50"/>
-
-		<seekBar description="When 2nd core is online, if rq_min less than trans_rq and it's load is less than trans_load_rq, 2nd core will turn off. (Only for Nightmare) (Default: 2)"
-			name="trans_rq" action="generic_cortex /tmp/trans_rq" unit="int" min="0" reversed="false" step="1" max="2"/>
-
 	</settingsPane>
 
 	<settingsPane description="Pegasusq Gov Configuration, see descriptions" name="PEGASUSQ GOV CONFIGURATON">
@@ -261,6 +232,42 @@
 
 	</settingsPane>
 
+	<settingsPane description="Interactive Gov Configuration, see descriptions" name="INTERACTIVE GOV CONFIGURATON">
+
+		<seekBar description="An intermediate hi_speed at which to initially ramp when CPU load hits the value specified in go_hispeed_load. (Default: 800.000 kHz)"
+			name="hispeed_freq" action="generic_cortex /tmp/hispeed_freq" unit="kHz" min="100000" reversed="false" step="100000" max="1200000"/>
+
+		<seekBar description="The CPU load at which to ramp to hispeed_freq. (Default is 99%)"
+			name="go_hispeed_load" action="generic_cortex /tmp/go_hispeed_load" unit="%" min="1" reversed="false" step="1" max="100"/>
+
+		<spinner description="When speed is at or above hispeed_freq, wait for this long before raising speed in response to continued high load."
+			name="above_hispeed_delay" action="above_hispeed_delay">
+			<spinnerItem name="battery" value="battery"/> 
+			<spinnerItem name="default" value="default"/> 
+			<spinnerItem name="performance" value="performance"/> 
+		</spinner>
+
+		<spinner description="CPU load values used to adjust speed to influence the current CPU load toward that value."
+			name="target_loads" action="target_loads">
+			<spinnerItem name="battery" value="battery"/> 
+			<spinnerItem name="default" value="default"/> 
+			<spinnerItem name="performance" value="performance"/> 
+		</spinner>
+
+		<seekBar description="Duration of a boot pulse. (Default 80000)"
+			name="boostpulse_duration" action="generic_cortex /tmp/boostpulse_duration" unit="uS" min="0" reversed="false" step="10000" max="1000000"/>
+
+		<seekBar description="The minimum amount of time to spend at the current frequency before ramping down. This is to ensure that the governor has seen enough historic cpu load data to determine the appropriate workload. (Default: 80000)"
+			name="min_sample_time" action="generic_cortex /tmp/min_sample_time" unit="uS" min="10000" reversed="false" step="10000" max="120000"/>
+
+		<seekBar description="Sample rate for reevaluating CPU load when the CPU is not idle.  A deferrable timer is used, such that the CPU will not be woken from idle to service this timer until something else needs to run. (The maximum time to allow deferring this timer when not running at minimum speed is configurable via timer_slack.) (Default: 20000)"
+			name="timer_rate" action="generic_cortex /tmp/timer_rate" unit="uS" min="10000" reversed="false" step="10000" max="120000"/>
+
+		<seekBar description="Maximum additional time to defer handling the governor sampling timer beyond timer_rate when running at speeds above the minimum. For example, if timer_rate is 20000uS and timer_slack is 10000uS then timers will be deferred for up to 30msec when not at lowest speed. (Default: 80000)"
+			name="timer_slack" action="generic_cortex /tmp/timer_slack" unit="uS" min="10000" reversed="false" step="10000" max="120000"/>
+
+	</settingsPane>
+
 </settingsTab>
 
 <settingsTab name="CPU-TUNING (SLEEP)">
@@ -269,9 +276,11 @@
 			name="Governor Parameters tuning">
 
 		<spinner description="This will set the DEEP SLEEP (screen off) CPU governor. Depends on cortex background process to be enabled." 
-			name="Deep-Sleep! CPU Governor" action="generic_cortex /tmp/deep_sleep">
+			name="Deep-Sleep! CPU Governor" action="generic_cortex /tmp/scaling_governor_sleep">
 			<spinnerItem name="conservative" value="conservative"/> 
 			<spinnerItem name="HYPER" value="HYPER"/> 
+			<spinnerItem name="zzmoove" value="zzmoove"/> 
+			<spinnerItem name="interactive" value="interactive"/> 
 			<spinnerItem name="intellidemand" value="intellidemand"/> 
 			<spinnerItem name="nightmare" value="nightmare"/> 
 			<spinnerItem name="ondemand" value="ondemand"/> 
@@ -336,18 +345,6 @@
 		<seekBar description="This threshold is used as up threshold while sampling at frequencies less than freq_for_responsiveness. Above that, normal inc_cpu_load is used. This gives us an option to make scaling aggressive/relaxed until a frequency and normal for higher frequencies. Again, during calculation of optimal frequency which should not trigger up policy, down threshold to consider is difference between inc_cpu_load_at_min_freq and freq_up_brake. (Only for Nightmare) (Default: 60%)"
 			name="inc_cpu_load_at_min_freq_sleep" action="generic_cortex /tmp/inc_cpu_load_at_min_freq_sleep" unit="%" min="1" reversed="false" step="1" max="100"/>
 
-		<seekBar description="When 2nd core is offline, if frequency of 1st core is 'big or equal' freq_min and load average is 'big or equal' trans_load_h0_scroff 2nd core will turn on. (Only for Nightmare) (Default: 20%)"
-			name="trans_load_h0_scroff" action="generic_cortex /tmp/trans_load_h0_scroff" unit="%" min="1" reversed="false" step="1" max="100"/>
-
-		<seekBar description="When 2nd core is online, if frequency of 1st core is less than freq_min and load average is less than trans_load_l1_scroff, 2nd core will turn off. (Only for Nightmare) (Default: 20%)"
-			name="trans_load_l1_scroff" action="generic_cortex /tmp/trans_load_l1_scroff" unit="%" min="1" reversed="false" step="1" max="100"/>
-
-		<seekBar description="When 2nd core is online, if rq_min less than trans_rq_sleep and it's load is less than trans_load_rq_sleep, 2nd core will turn off. (Only for Nightmare) (Default: 20%)"
-			name="trans_load_rq_sleep" action="generic_cortex /tmp/trans_load_rq_sleep" unit="%" min="0" reversed="false" step="1" max="50"/>
-
-		<seekBar description="When 2nd core is online, if rq_min less than trans_rq_sleep and it's load is less than trans_load_rq_sleep, 2nd core will turn off. (Only for Nightmare) (Default: 2)"
-			name="trans_rq_sleep" action="generic_cortex /tmp/trans_rq_sleep" unit=" int" min="0" reversed="false" step="1" max="2"/>
-
 	</settingsPane>
 
 	<settingsPane description="Pegasusq Gov Configuration, see descriptions" name="PEGASUSQ GOV CONFIGURATON">
@@ -357,6 +354,42 @@
 
 		<seekBar description="Number of samples to evaluate load to scale CPU Down. After CPU_down_rate samples are finished for a frequency, CPU scale-Down logic is executed. In other words - before scaling Down, cpu_down_rate*down_sample_time micro seconds are spend at a frequency. (Default: 20%)"
 			name="cpu_down_rate_sleep" action="generic_cortex /tmp/cpu_down_rate_sleep" unit="%" min="1" reversed="false" step="1" max="100"/>
+
+	</settingsPane>
+
+	<settingsPane description="Interactive Gov Configuration, see descriptions" name="INTERACTIVE GOV CONFIGURATON">
+
+		<seekBar description="An intermediate hi_speed at which to initially ramp when CPU load hits the value specified in go_hispeed_load. (Default: 500.000 kHz)"
+			name="hispeed_freq_sleep" action="generic_cortex /tmp/hispeed_freq_sleep" unit="kHz" min="100000" reversed="false" step="100000" max="1200000"/>
+
+		<seekBar description="The CPU load at which to ramp to hispeed_freq. (Default is 99%)"
+			name="go_hispeed_load_sleep" action="generic_cortex /tmp/go_hispeed_load_sleep" unit="%" min="1" reversed="false" step="1" max="100"/>
+
+		<spinner description="When speed is at or above hispeed_freq, wait for this long before raising speed in response to continued high load."
+			name="above_hispeed_delay_sleep" action="above_hispeed_delay_sleep">
+			<spinnerItem name="battery" value="battery"/> 
+			<spinnerItem name="default" value="default"/> 
+			<spinnerItem name="performance" value="performance"/> 
+		</spinner>
+
+		<spinner description="CPU load values used to adjust speed to influence the current CPU load toward that value."
+			name="target_loads_sleep" action="target_loads_sleep">
+			<spinnerItem name="battery" value="battery"/> 
+			<spinnerItem name="default" value="default"/> 
+			<spinnerItem name="performance" value="performance"/> 
+		</spinner>
+
+		<seekBar description="Duration of a boot pulse. (Default 80000)"
+			name="boostpulse_duration_sleep" action="generic_cortex /tmp/boostpulse_duration_sleep" unit="uS" min="0" reversed="false" step="10000" max="1000000"/>
+
+		<seekBar description="The minimum amount of time to spend at the current frequency before ramping down. This is to ensure that the governor has seen enough historic cpu load data to determine the appropriate workload. (Default: 80000)"
+			name="min_sample_time_sleep" action="generic_cortex /tmp/min_sample_time_sleep" unit="uS" min="10000" reversed="false" step="10000" max="120000"/>
+
+		<seekBar description="Sample rate for reevaluating CPU load when the CPU is not idle.  A deferrable timer is used, such that the CPU will not be woken from idle to service this timer until something else needs to run. (The maximum time to allow deferring this timer when not running at minimum speed is configurable via timer_slack.) (Default: 20000)"
+			name="timer_rate_sleep" action="generic_cortex /tmp/timer_rate_sleep" unit="uS" min="10000" reversed="false" step="10000" max="120000"/>
+
+		<seekBar description="Maximum additional time to defer handling the governor sampling timer beyond timer_rate when running at speeds above the minimum. For example, if timer_rate is 20000uS and timer_slack is 10000uS then timers will be deferred for up to 30msec when not at lowest speed. (Default: 80000)"
+			name="timer_slack_sleep" action="generic_cortex /tmp/timer_slack_sleep" unit="uS" min="10000" reversed="false" step="10000" max="120000"/>
 
 	</settingsPane>
 
@@ -390,7 +423,7 @@
 			<spinnerItem name="FIFO" value="fifo"/> 
 		</spinner>
 
-		<spinner description="This will set the STANDBY/DEEPSLEEP I/O scheduler for internal, system, data and external sdcard. (Default: NOOP)"
+		<spinner description="This will set the STANDBY/DEEPSLEEP I/O scheduler for internal, system, data and external sdcard. (Default: ROW)"
 			name="STANDBY/DEEPSLEEP I/O Scheduler" action="generic_cortex /tmp/sleep_scheduler">
 			<spinnerItem name="BFQ" value="bfq"/> 
 			<spinnerItem name="CFQ" value="cfq"/> 
@@ -464,10 +497,10 @@
 
 		<button description="ZRAM state check" name="ZRAM STATS" action="push-actions/zramstats" label="ZRAM STATS"/>
 
-		<checkbox description="Enable or Disable 'KSM-Control'. This will merge some memory but need cpu-power / battery. This depends on cortex background, so you have to stop/start the servive or reboot your phone." 
-			name="KSM-Control" action="generic_cortex /tmp/cortexbrain_ksm_control" label="KSM-Control"/>
+		<checkbox description="Enable or Disable 'Ultra KSM Control'. This will merge some memory but need cpu-power + battery. This depends on cortex background, so you have to stop/start the servive or reboot your phone." 
+			name="Ultra KSM Control" action="generic_cortex /tmp/cortexbrain_uksm_control" label="Ultra KSM Control"/>
 
-		<button description="KSM state check" name="KSM STATS" action="push-actions/ksmstats" label="KSM STATS"/>
+		<button description="Ultra KSM state check" name="Ultra KSM STATS" action="push-actions/uksmstats" label="Ultra KSM STATS"/>
 
 	</settingsPane>
 
@@ -509,7 +542,7 @@
 			<spinnerItem name="108 MHz" value="108"/> 
 		</spinner>
 
-		<spinner description="Changes the fourth GPU frequency step. WARNING! 400, 440, 520 MHz needs 1150 mV - 1400 mV. (520Mhz stable on 1400mV if your chip can handle that) Above 1300 mV you risk to burn your chip!" 
+		<spinner description="Changes the fourth GPU frequency step. WARNING! 400, 440, 520 MHz needs 1300 mV - 1450 mV. (520Mhz stable on 1400mV+ if your chip can handle that) Above 1300 mV you risk to burn your chip!" 
 			name="GPU Frequency Step 4" action="gpu-freq 4">
 			<spinnerItem name="520 MHz" value="520"/> 
 			<spinnerItem name="440 MHz" value="440"/> 
@@ -520,7 +553,7 @@
 			<spinnerItem name="160 MHz" value="160"/> 
 		</spinner>
 
-		<spinner description="Changes the fifth GPU frequency step. WARNING! 400, 440, 520 MHz needs 1150 mV - 1400 mV. (520Mhz stable on 1400mV if your chip can handle that) Above 1300 mV you risk to burn your chip!" 
+		<spinner description="Changes the fifth GPU frequency step. WARNING! 400, 440, 520 MHz needs 1300 mV - 1450 mV. (520Mhz stable on 1400mV+ if your chip can handle that) Above 1300 mV you risk to burn your chip!" 
 			name="GPU Frequency Step 5" action="gpu-freq 5">
 			<spinnerItem name="520 MHz" value="520"/> 
 			<spinnerItem name="440 MHz" value="440"/> 
@@ -532,7 +565,7 @@
 
 	</settingsPane>
 
-	<settingsPane description="GPU Voltage Levels: The defaults are 900, 950, 950, 1000 and 1050. WARNING! Voltage above 1200 mV can put your device to risk! Do not blame me if GPU chip burned." 
+	<settingsPane description="GPU Voltage Levels: The defaults are 900, 950, 950, 1000 and 1050. WARNING! Voltage above 1300 mV can put your device to risk! Do not blame me if GPU chip burned." 
 			name="GPU Voltage Levels">
 
 		<seekBar description="GPU Voltage for the first step" 
@@ -545,10 +578,10 @@
 			name="GPU Voltage Level 3" action="gpu-voltage 3" unit="mV" min="850" reversed="false" step="50" max="1300"/>
 
 		<seekBar description="GPU Voltage for the fourth step" 
-			name="GPU Voltage Level 4" action="gpu-voltage 4" unit="mV" min="850" reversed="false" step="50" max="1400"/>
+			name="GPU Voltage Level 4" action="gpu-voltage 4" unit="mV" min="850" reversed="false" step="50" max="1450"/>
 
 		<seekBar description="GPU Voltage for the fifth step" 
-			name="GPU Voltage Level 5" action="gpu-voltage 5" unit="mV" min="850" reversed="false" step="50" max="1400"/>
+			name="GPU Voltage Level 5" action="gpu-voltage 5" unit="mV" min="850" reversed="false" step="50" max="1450"/>
 
 	</settingsPane>
 
@@ -734,14 +767,14 @@
 		<checkbox description="BackLightNotification" 
 			name="BLN" action="generic /sys/class/misc/notification/notification_enabled" label="BLN"/>
 
-		<spinner description="This setting will set LED behavior for BLN, if BLNWW is ON! then effect is ONLY Steady!" 
+		<spinner description="This setting will set LED behavior for BLN, !README! if BLNWW is ON(see below)! then effect is ONLY Steady! and will be reset to !Steady!" 
 			name="BLN Effect" action="bln_switch">
 			<spinnerItem name="Steady" value="0"/> 
 			<spinnerItem name="Breathing" value="1"/> 
 			<spinnerItem name="Blinking" value="2"/> 
 		</spinner>
 
-		<spinner description="Notification timeout, if BLNWW is ON! this setting it ignored! BLN will never time out!" 
+		<spinner description="Notification timeout, !README! if BLNWW is ON(see below)! this setting it ignored and reset to !Never timeout!" 
 			name="notification_timeout" action="generic /sys/class/misc/notification/notification_timeout">
 			<spinnerItem name="Never timeout" value="0"/> 
 			<spinnerItem name="1 minute" value="60000"/> 
@@ -770,7 +803,7 @@
 			<spinnerItem name="60 sec" value="60000"/> 
 		</spinner>
 
-		<checkbox description="BLN Without Wakelock. You cannot use blinking or breathing effects together with this option. Enabling this will let the CPU sleep during BLN and save battery." 
+		<checkbox description="BLN Without Wakelock. You cannot use blinking or breathing BLN effects together with this option, also no BLN timeout! BLN will be active till screen is ON!. Enabling this will let the CPU sleep during BLN and save battery." 
 			name="BLNWW" action="generic /sys/class/misc/notification/blnww" label="BLNWW"/>
 
 		<checkbox description="Led fadeout effect. If you are on a Samsung ROM, you need to set Touch Keys LEDs to always on or always off and use LED timeout in STweaks." 
@@ -882,19 +915,19 @@
 
 	</settingsPane>
 
-	<settingsPane description="Charger/Battery settings/options." name="Battery">
+	<settingsPane description="Charger/Battery settings/options. allowed mA is in range from 450mA to 650mA, by hardware limits! we cant set less or more" name="Battery Charge">
 
 		<seekBar description="Battery AC Charge Current Setting" 
 			name="Battery AC Charge Current" action="chargecurrent 1" 
-                        unit="mA" min="450" reversed="false" step="50" max="750"/>
+                        unit="mA" min="450" reversed="false" step="50" max="650"/>
 
 		<seekBar description="Battery MISC Charge Current Setting" 
 			name="Battery MISC Charge Current" action="chargecurrent 2" 
-			unit="mA" min="450" reversed="false" step="50" max="750"/>
+			unit="mA" min="450" reversed="false" step="50" max="650"/>
 
 		<seekBar description="Battery USB Charge Current Setting" 
 			name="Battery USB Charge Current" action="chargecurrent 3" 
-			unit="mA" min="450" reversed="false" step="50" max="750"/>
+			unit="mA" min="450" reversed="false" step="50" max="650"/>
 
 		<button description="If you think that the fuel gauge chip is behaving weird use this button to reset it. Give it a few hours after you reset the gauge. It may still show you funny values for that period, then the battery percentage should be fine." name="Reset Fuel-Gauge Chip" action="push-actions/reset-fuelgauge" label="Reset Fuel-Gauge Chip"/>
 
@@ -1004,6 +1037,20 @@
 		<checkbox description="Enable or Disable 'Battery-Tweaks' (reboot needed)."
 			name="Battery-Tweaks" action="generic_cortex /tmp/cortexbrain_battery" label="Battery-Tweaks"/>
 
+		<checkbox description="Enable or Disable 'Eco-Tweaks' (reboot needed)."
+			name="Eco-Tweaks" action="generic_cortex /tmp/cortexbrain_eco" label="Eco-Tweaks"/>
+
+		<spinner description="From what percentage battery life, the eco-mode is activated? Depends on Eco-Tweaks!" 
+			name="Eco-Level" action="generic_cortex /tmp/cortexbrain_eco_level">
+			<spinnerItem name="2%" value="2"/> 
+			<spinnerItem name="5%" value="5"/> 
+			<spinnerItem name="10%" value="10"/> 
+			<spinnerItem name="20%" value="20"/> 
+			<spinnerItem name="30%" value="30"/> 
+			<spinnerItem name="40%" value="30"/> 
+			<spinnerItem name="50%" value="50"/> 
+		</spinner>
+
 		<checkbox description="Enable or Disable 'System-Tweak' (reboot needed)."
 			name="System-Tweaks" action="generic_cortex /tmp/cortexbrain_system" label="System-Tweaks"/>
 
@@ -1029,6 +1076,9 @@
 
 		<checkbox description="Enable or Disable CIFS Module. This will allow to use apps that can mount internal storage and publish over network. User can access data/system over network. No support, effect only after reboot!"
 			name="CIFS Module" action="generic_cortex /tmp/cifs_module" label="CIFS Module"/>
+
+		<checkbox description="Enable or Disable EDS Module, (Encrypted Data Store) lets you store your files in the encrypted container to prevent unauthorized access to sensitive information. you need app from google store (EDS/Paid/Lite)"
+			name="EDS Module" action="generic_cortex /tmp/eds_module" label="EDS Module"/>
 
 	</settingsPane>
 
@@ -1116,6 +1166,8 @@
 	<settingsPane description="Check if there is a new kernel-update available." name="Kernel-Update">
 
 		<button description="Check for Update" name="Kernel-Update" action="push-actions/kernel_check" label="KERNEL-CHECK"/>
+
+	<!--force profiles reset- version 1.0-->
 
 	</settingsPane>
 

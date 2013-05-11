@@ -42,15 +42,15 @@ select_profile()
 		# if there is no such profile, create one
 		_ACTIVE_PROFILE=`cat $ACTIVE_PROFILE`;
 		if [ ! -f ${PROFILE_PATH}/${_ACTIVE_PROFILE}.profile ]; then
-      		cp -a $DEFAULT_PROFILE ${PROFILE_PATH}/${1}.profile;
-      		[ "$_ACTIVE_PROFILE" == "battery" ] && cp -a $BATTERY_PROFILE ${PROFILE_PATH}/${1}.profile;
-      		[ "$_ACTIVE_PROFILE" == "performance" ] && cp -a $PERFORMANCE_PROFILE ${PROFILE_PATH}/${1}.profile;
-    	fi;
-		if [ ! -f ${PROFILE_PATH}/${1}.profile ]; then
-      		cp -a ${PROFILE_PATH}/${_ACTIVE_PROFILE}.profile ${PROFILE_PATH}/${1}.profile;
+			cp -a $DEFAULT_PROFILE ${PROFILE_PATH}/${1}.profile;
+			[ "$_ACTIVE_PROFILE" == "battery" ] && cp -a $BATTERY_PROFILE ${PROFILE_PATH}/${1}.profile;
+			[ "$_ACTIVE_PROFILE" == "performance" ] && cp -a $PERFORMANCE_PROFILE ${PROFILE_PATH}/${1}.profile;
 		fi;
-    	echo "$1" > $ACTIVE_PROFILE;
-    	chmod 777 ${PROFILE_PATH}/${1}.profile;
+		if [ ! -f ${PROFILE_PATH}/${1}.profile ]; then
+			cp -a ${PROFILE_PATH}/${_ACTIVE_PROFILE}.profile ${PROFILE_PATH}/${1}.profile;
+		fi;
+		echo "$1" > $ACTIVE_PROFILE;
+		chmod 777 ${PROFILE_PATH}/${1}.profile;
 	fi;
 }
 

@@ -24,13 +24,6 @@ on init
     write /sys/block/mmcblk0/queue/iosched/slice_idle 0
 
 on fs
-
-# check all
-    exec sfsck /res/dev/cache ext4
-    exec sfsck /dev/block/mmcblk0p1 ext4
-    exec sfsck /res/dev/data ext4
-
-# mount partitions.
     mount_all /fstab.smdk4210
 
     mkdir /efs/bluetooth

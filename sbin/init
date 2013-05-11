@@ -81,23 +81,18 @@ $BB mount -t vfat /dev/block/mmcblk0p11 /mnt/tmp && ( mkdir -p /mnt/tmp/clockwor
 if [ -e /dev/block/mmcblk1p1 ]; then
 	$BB mount -t vfat /dev/block/mmcblk1p1 /mnt/tmp2 && ( mkdir -p /mnt/tmp2/clockworkmod/blobs/ ) && ( touch /mnt/tmp2/clockworkmod/.nomedia ) && ( touch /mnt/tmp2/clockworkmod/blobs/.nomedia );
 
-	SDCARD_SIZE1=`$BB df | $BB grep /dev/block/mmcblk1p1 | $BB cut -c 23-30`
-	SDCARD_SIZE4=`$BB df | $BB grep /dev/block/mmcblk1p1 | $BB cut -c 23-30`
-	SDCARD_SIZE8=`$BB df | $BB grep /dev/block/mmcblk1p1 | $BB cut -c 23-30`
-	SDCARD_SIZE16=`$BB df | $BB grep /dev/block/mmcblk1p1 | $BB cut -c 23-30`
-	SDCARD_SIZE32=`$BB df | $BB grep /dev/block/mmcblk1p1 | $BB cut -c 23-30`
-	SDCARD_SIZE64=`$BB df | $BB grep /dev/block/mmcblk1p1 | $BB cut -c 23-30`
-	if [ "$SDCARD_SIZE1" -lt "1000000" ]; then
+	SDCARD_SIZE=`$BB df | $BB grep /dev/block/mmcblk1p1 | $BB cut -c 23-30`
+	if [ "$SDCARD_SIZE" -lt "1000000" ]; then
 		echo "1" > /tmp/sdcard_size;
-	elif [ "$SDCARD_SIZE4" -lt "4000000" ]; then
+	elif [ "$SDCARD_SIZE" -lt "4000000" ]; then
 		echo "4" > /tmp/sdcard_size;
-	elif [ "$SDCARD_SIZE8" -lt "8000000" ]; then
+	elif [ "$SDCARD_SIZE" -lt "8000000" ]; then
 		echo "8" > /tmp/sdcard_size;
-	elif [ "$SDCARD_SIZE16" -lt "16000000" ]; then
+	elif [ "$SDCARD_SIZE" -lt "16000000" ]; then
 		echo "16" > /tmp/sdcard_size;
-	elif [ "$SDCARD_SIZE32" -lt "32000000" ]; then
+	elif [ "$SDCARD_SIZE" -lt "32000000" ]; then
 		echo "32" > /tmp/sdcard_size;
-	elif [ "$SDCARD_SIZE64" -lt "64000000" ]; then
+	elif [ "$SDCARD_SIZE" -lt "64000000" ]; then
 		echo "64" > /tmp/sdcard_size;
 	fi;
 
@@ -287,58 +282,69 @@ PARTITION_TUNING()
 	$BB umount -l $DIR_DATA >> $LOG_DATA;
 	$BB umount -l $DIR_CACHE >> $LOG_CACHE;
 
+	# triggers
+	NEED_CHECK_CACHE=0;
+	NEED_CHECK_DATA=0;
+
 	# set fs-feature -> [^]has_journal
 	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'features' | grep 'has_journal'" > $LOG_CACHE_TMP;
 	if [ "a`cat $LOG_CACHE_TMP`" == "a" ]; then
 		$BB sh -c "/sbin/tune2fs -O has_journal $DEVICE_CACHE" >> $LOG_CACHE;
-		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
+		NEED_CHECK_CACHE=1;
 	fi;
 	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'features' | grep 'has_journal'" > $LOG_DATA_TMP;
 	if [ "a`cat $LOG_DATA_TMP`" == "a" ]; then
 		$BB sh -c "/sbin/tune2fs -O has_journal $DEVICE_DATA" >> $LOG_DATA;
-		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
+		NEED_CHECK_DATA=1;
 	fi;
 
 	# set fs-feature -> [^]dir_index
 	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'features' | grep 'dir_index'" > $LOG_CACHE_TMP;
 	if [ "a`cat $LOG_CACHE_TMP`" == "a" ]; then	
 		$BB sh -c "/sbin/tune2fs -O dir_index $DEVICE_CACHE" >> $LOG_CACHE;
+		NEED_CHECK_CACHE=1;
 	fi;
 	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'features' | grep 'dir_index'" > $LOG_DATA_TMP;
 	if [ "a`cat $LOG_DATA_TMP`" == "a" ]; then
 		$BB sh -c "/sbin/tune2fs -O dir_index $DEVICE_DATA" >> $LOG_DATA;
+		NEED_CHECK_DATA=1;
 	fi;
 
 	# set mount option -> [^]journal_data_ordered
 	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'Default mount options' | grep 'journal_data_ordered'" > $LOG_CACHE_TMP;
 	if [ "a`cat $LOG_CACHE_TMP`" == "a" ]; then
 		$BB sh -c "/sbin/tune2fs -o journal_data_ordered $DEVICE_CACHE" >> $LOG_CACHE;
-		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
+		NEED_CHECK_CACHE=1;
 	fi;
 	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'Default mount options' | grep 'journal_data_ordered'" > $LOG_DATA_TMP;
 	if [ "a`cat $LOG_DATA_TMP`" == "a" ]; then
 		$BB sh -c "/sbin/tune2fs -o journal_data_ordered $DEVICE_DATA" >> $LOG_DATA;
-		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
+		NEED_CHECK_DATA=1;
 	fi;
 
 	# set inode to 256
 	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'Inode size' | grep '256'" > $LOG_CACHE_TMP;
 	if [ "a`cat $LOG_CACHE_TMP`" == "a" ]; then
 		$BB sh -c "/sbin/tune2fs -I 256 $DEVICE_CACHE" >> $LOG_CACHE;
-		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
 	fi;
 	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'Inode size' | grep '256'" > $LOG_DATA_TMP;
 	if [ "a`cat $LOG_DATA_TMP`" == "a" ]; then
 		$BB sh -c "/sbin/tune2fs -I 256 $DEVICE_DATA" >> $LOG_DATA;
+	fi;
+
+	# check 'X2' partitions, if needed
+	if [ "$NEED_CHECK_CACHE" == "1" ]; then
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
+	fi;
+	if [ "$NEED_CHECK_DATA" == "1" ]; then
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
 		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
 	fi;
 
 	# efs check and fix, do not change
 	$BB sh -c "/sbin/e2fsck -fyc /dev/block/mmcblk0p1" > /tmp/efs_check;
 	$BB sh -c "/sbin/e2fsck -p /dev/block/mmcblk0p1" >> /tmp/efs_check;
-	$BB mount -t ext4 /dev/block/mmcblk0p1 /efs;
-	$BB chmod -R 777 /efs;
-	$BB umount /efs;
 
 	# only if asked by user via stweaks
 	if [ -e /system/run_fs_check ]; then
@@ -346,24 +352,14 @@ PARTITION_TUNING()
 		$BB rm -f /system/run_fs_check;
 
 		# check cache
+		$BB sh -c "/sbin/e2fsck -fyc $DEVICE_CACHE"
+		$BB sh -c "/sbin/e2fsck -fyc $DEVICE_CACHE" >> $LOG_CACHE;
 		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
-		$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'Filesystem state' | grep 'clean'" > $LOG_CACHE_TMP;
-		if [ "a`cat $LOG_CACHE_TMP`" == "a" ] || [ "`cat $LOG_CACHE_TMP`" == "Filesystem state:         clean with errors" ]; then
-			$BB sh -c "/sbin/e2fsck -fyc $DEVICE_CACHE" >> $LOG_CACHE;
-			$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
-		else
-			echo "CACHE: $LOG_CACHE_TMP" >> $LOG_CACHE;
-		fi;
 
 		# check data
+		$BB sh -c "/sbin/e2fsck -fyc $DEVICE_DATA"
+		$BB sh -c "/sbin/e2fsck -fyc $DEVICE_DATA" >> $LOG_DATA;
 		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
-		$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'Filesystem state' | grep 'clean'" > $LOG_DATA_TMP;
-		if [ "a`cat $LOG_DATA_TMP`" == "a" ] || [ "`cat $LOG_DATA_TMP`" == "Filesystem state:         clean with errors" ]; then
-			$BB sh -c "/sbin/e2fsck -fyc $DEVICE_DATA" >> $LOG_DATA;
-			$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
-		else
-			echo "DATA: $LOG_DATA_TMP" >> $LOG_DATA;
-		fi;
 	fi;
 }
 
@@ -396,12 +392,11 @@ USER_ACTIONS()
 		# sdcard unmount
 		sync;
 		$BB umount -l /sdcardtmp;
-		if [ `du -h /sdcardtmp | grep 4 | cut -c1-4` == "4.0K" ]; then
+		if [ `$BB du -h /sdcardtmp | grep 4 | cut -c1-4` == "4.0K" ]; then
 			$BB rm -rf /sdcardtmp;
 		fi;
 
 		# data unmount
-		sync;
 		$BB umount -l /data;
 	fi;
 }

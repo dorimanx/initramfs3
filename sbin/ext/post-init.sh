@@ -98,11 +98,10 @@ $BB chmod -R 755 /lib;
 	if [ "$cifs_module" == "on" ]; then
 		$BB insmod /lib/modules/cifs.ko;
 	fi;
+	if [ "$eds_module" == "on" ]; then
+		$BB insmod /lib/modules/eds.ko;
+	fi;
 )&
-
-# dual core hotplug
-echo "on" > /sys/devices/virtual/misc/second_core/hotplug_on;
-echo "off" > /sys/devices/virtual/misc/second_core/second_core_on;
 
 # some nice thing for dev
 $BB ln -s /sys/devices/system/cpu/cpu0/cpufreq /cpufreq;
@@ -120,7 +119,7 @@ echo "1" > /sys/devices/platform/samsung-pd.2/mdnie/mdnie/mdnie/user_mode;
 # create init.d folder if missing
 if [ ! -d /system/etc/init.d ]; then
 	mkdir -p /system/etc/init.d/
-	$BB chmod -R 755 /system/etc/init.d/;
+	$BB chmod 755 /system/etc/init.d/;
 fi;
 
 (
@@ -147,29 +146,26 @@ if [ "$logger" == "off" ]; then
 fi;
 
 # for ntfs automounting
-mkdir /mnt/ntfs;
-$BB chmod -R 777 /mnt/ntfs/;
 mount -t tmpfs -o mode=0777,gid=1000 tmpfs /mnt/ntfs
 
 $BB sh /sbin/ext/properties.sh;
 
 (
+	# Apps Install
 	$BB sh /sbin/ext/install.sh;
-)&
 
-# EFS Backup 
-(
+	# EFS Backup
 	$BB sh /sbin/ext/efs-backup.sh;
 )&
 
-echo 0 > /tmp/uci_done;
+echo "0" > /tmp/uci_done;
 chmod 666 /tmp/uci_done;
 
 (
 	# custom boot booster
 	COUNTER=0;
 	while [ "`cat /tmp/uci_done`" != "1" ]; do
-		if [ "$COUNTER" -ge "6" ]; then
+		if [ "$COUNTER" -ge "10" ]; then
 			break;
 		fi;
 		echo "$boot_boost" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
@@ -218,7 +214,7 @@ chmod 666 /tmp/uci_done;
 
 	# restore normal freq
 	echo "$scaling_min_freq" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq;
-	if [ "$scaling_max_freq" == "1000000" ] && [ "$scaling_max_freq_oc" -ge "1000000" ]; then
+	if [ "$scaling_max_freq" == "1000000" ] && [ "$scaling_max_freq_oc" -gt "1000000" ]; then
 		echo "$scaling_max_freq_oc" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
 	else
 		echo "$scaling_max_freq" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
@@ -230,28 +226,6 @@ chmod 666 /tmp/uci_done;
 	else
 		touch /data/dalvik-cache/not_first_boot;
 		chmod 777 /data/dalvik-cache/not_first_boot;
-	fi;
-)&
-
-(
-	sleep 40;
-	# try to fix broken wifi toggle after boot
-	service call wifi 14 | grep "0 00000001" > /dev/null
-	if [ "$?" -eq "0" ]; then
-		svc wifi enable;
-		service call wifi 13 i32 1 > /dev/null
-		service call wifi 13 i32 1 > /dev/null
-		service call wifi 13 i32 1 > /dev/null
-		service call wifi 13 i32 1 > /dev/null
-		# disable as was.
-		service call wifi 13 i32 0 > /dev/null
-		svc wifi disable;
-	else
-		service call wifi 13 i32 1 > /dev/null
-		service call wifi 13 i32 1 > /dev/null
-		service call wifi 13 i32 1 > /dev/null
-		service call wifi 13 i32 1 > /dev/null
-		svc wifi enable;
 	fi;
 )&
 

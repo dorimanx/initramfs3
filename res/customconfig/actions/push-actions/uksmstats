@@ -1,0 +1,13 @@
+#!/sbin/busybox sh
+
+PROFILE=`cat /data/.siyah/.active.profile`;
+. /data/.siyah/$PROFILE.profile;
+
+if [ "$cortexbrain_uksm_control" == "on" ]; then
+	saved_mem=`echo "Saved memory: $((\`cat /sys/kernel/mm/uksm/pages_sharing\`*4096/1024/1024)) MB"`;
+	shard_mem=`echo "Shared memory: $((\`cat /sys/kernel/mm/uksm/pages_shared\`*4096/1024/1024)) MB"`;
+
+	echo "$saved_mem - $shard_mem";
+else
+	echo "UKSM IS OFFLINE";
+fi;

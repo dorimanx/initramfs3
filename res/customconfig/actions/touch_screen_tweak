@@ -11,6 +11,6 @@ else
 fi;
 
 if [ -f /sys/devices/virtual/sec/sec_touchscreen/tsp_touch_config ]; then
-	echo "$TOUCHSCREEN1 $TOUCHSCREEN2 $TOUCHSCREEN3 $TOUCHSCREEN4 $TOUCHSCREEN5 $TOUCHSCREEN6" > /sys/devices/virtual/sec/sec_touchscreen/tsp_touch_config;
+	echo "$TOUCHSCREEN1 $TOUCHSCREEN2 $TOUCHSCREEN3 $TOUCHSCREEN4 $TOUCHSCREEN5 $TOUCHSCREEN6 $TOUCHSCREEN7 $TOUCHSCREEN8 $TOUCHSCREEN9 $TOUCHSCREEN10" > /sys/devices/virtual/sec/sec_touchscreen/tsp_touch_config;
 fi;
 

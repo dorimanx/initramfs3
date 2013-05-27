@@ -311,14 +311,14 @@ PARTITION_TUNING()
 	fi;
 
 	# set mount option -> [^]journal_data_ordered
-	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'Default mount options' | grep 'journal_data_ordered'" > $LOG_CACHE_TMP;
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'Default mount options' | grep 'journal_data_writeback'" > $LOG_CACHE_TMP;
 	if [ "a`cat $LOG_CACHE_TMP`" == "a" ]; then
-		$BB sh -c "/sbin/tune2fs -o journal_data_ordered $DEVICE_CACHE" >> $LOG_CACHE;
+		$BB sh -c "/sbin/tune2fs -o journal_data_writeback $DEVICE_CACHE" >> $LOG_CACHE;
 		NEED_CHECK_CACHE=1;
 	fi;
-	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'Default mount options' | grep 'journal_data_ordered'" > $LOG_DATA_TMP;
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'Default mount options' | grep 'journal_data_writeback'" > $LOG_DATA_TMP;
 	if [ "a`cat $LOG_DATA_TMP`" == "a" ]; then
-		$BB sh -c "/sbin/tune2fs -o journal_data_ordered $DEVICE_DATA" >> $LOG_DATA;
+		$BB sh -c "/sbin/tune2fs -o journal_data_writeback $DEVICE_DATA" >> $LOG_DATA;
 		NEED_CHECK_DATA=1;
 	fi;
 

@@ -17,7 +17,7 @@ if [ "$WGET_CHECK1" == 1 ] || [ "$WGET_CHECK2" == 1 ]; then
 
 	TMPFILE=$(mktemp -t);
 	TMPFILE2=$(mktemp -t);
-	OLD_VERSION=`cat /proc/version | sed 's/.*-V//g' | sed 's/-I.*//g'`;
+	OLD_VERSION=`cat /proc/version | sed 's/.*-V//g' | sed 's/-I.*//g' | sed 's/-/ /g' | awk '{print $1}'`;
 
 	TESTCONNECTION=`wget http://www.google.com -O $TMPFILE > /dev/null 2>&1`;
 	if [ $? != 0 ]; then
@@ -30,7 +30,7 @@ if [ "$WGET_CHECK1" == 1 ] || [ "$WGET_CHECK2" == 1 ]; then
 			# debug
 			#echo $version " - " $OLD_VERSION;
 
-			expr "$version" \> $OLD_VERSION > /dev/null && echo "There is a new version of this kernel available!!!" && break;
+			expr "$version" \> $OLD_VERSION >/dev/null && echo "There is a new version of this kernel available!!!" && break;
 			expr "7.0" \= $version >/dev/null && echo "You already using the most advanced kernel in the world!" && break;
 			expr "8.0" \= $version >/dev/null && echo "You already using the most advanced kernel in the world!" && break;
 			expr "9.0" \= $version >/dev/null && echo "You already using the most advanced kernel in the world!" && break;

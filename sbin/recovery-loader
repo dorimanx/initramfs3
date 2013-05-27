@@ -24,6 +24,9 @@ cat /res/etc/recovery.fstab > /etc/recovery.fstab
 #start adbd
 stop tvout
 
+echo "6" > /sys/class/mdnie/mdnie/scenario
+echo "1" > /sys/class/mdnie/mdnie/mode
+
 rm -rf /cache
 mkdir /cache
 chmod 777 /cache

@@ -146,12 +146,12 @@ KERNEL_TWEAKS()
 			echo "0" > /proc/sys/vm/panic_on_oom;
 			echo "60" > /proc/sys/kernel/panic;
 			if [ "$cortexbrain_memory" == on ]; then
-				echo "32 64" > /proc/sys/vm/lowmem_reserve_ratio;
+				echo "32 32" > /proc/sys/vm/lowmem_reserve_ratio;
 			fi;
 		elif [ "${state}" == "sleep" ]; then
 			echo "1" > /proc/sys/vm/oom_kill_allocating_task;
 			echo "1" > /proc/sys/vm/panic_on_oom;
-			echo "60" > /proc/sys/kernel/panic;
+			echo "30" > /proc/sys/kernel/panic;
 			if [ "$cortexbrain_memory" == on ]; then
 				echo "32 32" > /proc/sys/vm/lowmem_reserve_ratio;
 			fi;
@@ -892,9 +892,9 @@ VFS_CACHE_PRESSURE()
 
 	if [ -e $sys_vfs_cache ]; then
 		if [ "${state}" == "awake" ]; then
-			echo "100" > $sys_vfs_cache;
+			echo "50" > $sys_vfs_cache;
 		elif [ "${state}" == "sleep" ]; then
-			echo "20" > $sys_vfs_cache;
+			echo "10" > $sys_vfs_cache;
 		fi;
 
 		log -p i -t $FILE_NAME "*** VFS_CACHE_PRESSURE: ${state} ***";

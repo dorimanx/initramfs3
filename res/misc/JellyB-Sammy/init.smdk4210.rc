@@ -204,8 +204,8 @@ on fs
     chown system media_rw /sys/class/mdnie/mdnie/outdoor
     chown system media_rw /sys/class/mdnie/mdnie/scenario
     chown system media_rw /sys/class/mdnie/mdnie/negative
-    write /sys/class/mdnie/mdnie/scenario 0
-    write /sys/class/mdnie/mdnie/mode 0
+    write /sys/class/mdnie/mdnie/scenario 6
+    write /sys/class/mdnie/mdnie/mode 1
 
 # Switch Device
     chown system radio /sys/class/sec/switch/uart_sel/value

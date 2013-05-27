@@ -227,6 +227,10 @@ chmod 666 /tmp/uci_done;
 		touch /data/dalvik-cache/not_first_boot;
 		chmod 777 /data/dalvik-cache/not_first_boot;
 	fi;
+
+	# Color tuning
+	echo "6" > /sys/class/mdnie/mdnie/scenario;
+	echo "1" > /sys/class/mdnie/mdnie/mode;
 )&
 
 (

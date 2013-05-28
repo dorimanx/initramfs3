@@ -24,13 +24,14 @@ if [ "$WGET_CHECK1" == 1 ] || [ "$WGET_CHECK2" == 1 ]; then
 		echo "Problem: no internet connection! connect and try again";
 	else
 		wget http://www.dorimanx.com/Android-ICS/ -O $TMPFILE > /dev/null 2>&1;
-		cat $TMPFILE | grep ".*-V" |  sed 's/.*-V//g' | sed 's/-I.*//g' | sed 's/[-\[].*//g' > $TMPFILE2;
+		cat $TMPFILE | grep ".*-V" |  sed 's/.*-V//g' | sed 's/-I.*//g' | sed 's/[-\[].*//g' | sort -r > $TMPFILE2;
 
 		for version in $(cat $TMPFILE2); do
-			expr "$version" \> $OLD_VERSION >/dev/null && echo "There is a new version of this kernel available!!!" && break;
-			expr "7.0" \= $version >/dev/null && echo "You already using the most advanced kernel in the world!" && break;
-			expr "8.0" \= $version >/dev/null && echo "You already using the most advanced kernel in the world!" && break;
-			expr "9.0" \= $version >/dev/null && echo "You already using the most advanced kernel in the world!" && break;
+		
+			expr "$OLD_VERSION" \< "$version" >/dev/null && expr "$version" \< "8.99" >/dev/null && echo "There is a new version of this kernel available!!!" && break;
+			expr "$OLD_VERSION" \< "$version" >/dev/null && expr "$OLD_VERSION" \> "9.0" >/dev/null && echo "There is a new version of this kernel available!!!" && break;
+			expr "$OLD_VERSION" \= $version >/dev/null && expr "$OLD_VERSION" \< "8.99" >/dev/null && echo "You already using the most advanced kernel in the world!" && break;
+			expr "$OLD_VERSION" \= $version >/dev/null && echo "You already using the most advanced kernel in the world!" && break;
 		done;
 	fi;
 

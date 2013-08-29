@@ -1,10 +1,8 @@
 #!/sbin/busybox sh
 
-mount -o remount,rw /system;
+fixFS="$EXTERNAL_STORAGE/.run_fs_check";
 
-fixFS="/system/run_fs_check";
-
-if [ ! -e $fixFS ]; then
+f [ ! -e $fixFS ]; then
 	echo "fix fs" > $fixFS;
 	echo "Activated! Do Titanium-Backup before reboot, just in case!";
 else

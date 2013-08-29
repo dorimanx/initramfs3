@@ -180,6 +180,174 @@ else
 	echo "1" > /tmp/pri_rom_boot;
 fi;
 
+#############################
+# Partition global tuning!
+#############################
+
+NEED_CHECK()
+{
+	echo "1" > /tmp/need_check_part;
+}
+
+PARTITION_TUNING()
+{
+	DEVICE_DATA="/res/dev/data";
+	DIR_DATA="/data";
+	LOG_DATA="/log-data";
+	LOG_DATA_TMP="/log-data-tmp";
+
+	DEVICE_CACHE="/res/dev/cache";
+	DIR_CACHE="/cache";
+	LOG_CACHE="/log-cache";
+	LOG_CACHE_TMP="/log-cache-tmp";
+
+	DEVICE_SYSTEM="/res/dev/system";
+	DIR_SYSTEM="/system";
+	LOG_SYSTEM="/log-system";
+	LOG_SYSTEM_TMP="/log-system-tmp";
+
+	# new empty log
+	$BB sh -c "/sbin/date" > $LOG_DATA;
+	$BB sh -c "/sbin/date" > $LOG_CACHE;
+	$BB sh -c "/sbin/date" > $LOG_SYSTEM;
+
+	# umount 
+	$BB umount -l $DIR_DATA;
+	$BB umount -l $DIR_CACHE;
+	$BB umount -l $DIR_SYSTEM;
+
+	# set fs-feature -> [^]has_journal
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'features' | grep 'has_journal' | wc -l" > $LOG_CACHE_TMP;
+	if [ "`cat $LOG_CACHE_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -O has_journal $DEVICE_CACHE" >> $LOG_CACHE;
+		NEED_CHECK;
+	fi;
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'features' | grep 'has_journal' | wc -l" > $LOG_DATA_TMP;
+	if [ "`cat $LOG_DATA_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -O has_journal $DEVICE_DATA" >> $LOG_DATA;
+		NEED_CHECK;
+	fi;
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_SYSTEM | grep 'features' | grep 'has_journal' | wc -l" > $LOG_SYSTEM_TMP;
+	if [ "`cat $LOG_SYSTEM_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -O has_journal $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+		NEED_CHECK;
+	fi;
+
+	# set fs-feature -> [^]dir_index
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'features' | grep 'dir_index' | wc -l" > $LOG_CACHE_TMP;
+	if [ "`cat $LOG_CACHE_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -O dir_index $DEVICE_CACHE" >> $LOG_CACHE;
+		NEED_CHECK;
+	fi;
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'features' | grep 'dir_index' | wc -l" > $LOG_DATA_TMP;
+	if [ "`cat $LOG_DATA_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -O dir_index $DEVICE_DATA" >> $LOG_DATA;
+		NEED_CHECK;
+	fi;
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_SYSTEM | grep 'features' | grep 'dir_index' | wc -l" > $LOG_SYSTEM_TMP;
+	if [ "`cat $LOG_SYSTEM_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -O dir_index $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+		NEED_CHECK;
+	fi;
+
+	# check if jornal recover needed
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'state' | grep 'clean' | wc -l" > $LOG_CACHE_TMP;
+	if [ "`cat $LOG_CACHE_TMP`" -eq "0" ]; then
+		NEED_CHECK;
+	fi;
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'state' | grep 'clean' | wc -l" > $LOG_DATA_TMP;
+	if [ "`cat $LOG_DATA_TMP`" -eq "0" ]; then
+		NEED_CHECK;
+	fi;
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_SYSTEM | grep 'state' | grep 'clean' | wc -l" > $LOG_SYSTEM_TMP;
+	if [ "`cat $LOG_SYSTEM_TMP`" -eq "0" ]; then
+		NEED_CHECK;
+	fi;
+
+	$BB sh -c "/sbin/tune2fs -l /dev/block/mmcblk0p1 | grep 'state' | grep 'clean' | wc -l" > /tmp/efs_check;
+	if [ "`cat /tmp/efs_check`" -eq "0" ]; then
+		echo "need" > /tmp/efs_check;
+	fi;
+
+	# set mount option -> [^]journal_data_writeback
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'Default mount options' | grep 'journal_data_writeback' | wc -l" > $LOG_CACHE_TMP;
+	if [ "`cat $LOG_CACHE_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -o journal_data_writeback $DEVICE_CACHE" >> $LOG_CACHE;
+		NEED_CHECK;
+	fi;
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'Default mount options' | grep 'journal_data_writeback' | wc -l" > $LOG_DATA_TMP;
+	if [ "`cat $LOG_DATA_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -o journal_data_writeback $DEVICE_DATA" >> $LOG_DATA;
+		NEED_CHECK;
+	fi;
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_SYSTEM | grep 'Default mount options' | grep 'journal_data_writeback' | wc -l" > $LOG_SYSTEM_TMP;
+	if [ "`cat $LOG_SYSTEM_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -o journal_data_writeback $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+		NEED_CHECK;
+	fi;
+
+	# set inode to 256
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'Inode size' | grep '256' | wc -l" > $LOG_CACHE_TMP;
+	if [ "`cat $LOG_CACHE_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -I 256 $DEVICE_CACHE" >> $LOG_CACHE;
+	fi;
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'Inode size' | grep '256' | wc -l" > $LOG_DATA_TMP;
+	if [ "`cat $LOG_DATA_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -I 256 $DEVICE_DATA" >> $LOG_DATA;
+	fi;
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_SYSTEM | grep 'Inode size' | grep '256' | wc -l" > $LOG_SYSTEM_TMP;
+	if [ "`cat $LOG_SYSTEM_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -I 256 $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+	fi;
+
+	# check 'X2' partitions, if needed
+	if [ "`cat /tmp/need_check_part`" -eq "1" ]; then
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+	fi;
+	if [ "`cat /tmp/efs_check`" == "need" ]; then
+		$BB sh -c "/sbin/e2fsck -p /dev/block/mmcblk0p1" > /tmp/efs_check;
+		$BB sh -c "/sbin/e2fsck -p /dev/block/mmcblk0p1" >> /tmp/efs_check;
+	fi;
+
+	# only if asked by user via stweaks
+	if [ -e /mnt/tmp/.run_fs_check ]; then
+		# reset the lock-file
+		$BB rm -f /mnt/tmp/.run_fs_check;
+
+		$BB mount -t ext4 $DEVICE_DATA /data;
+		$BB rm -f /data/dalvik-cache/*;
+		sync;
+		umount /data;
+	fi;
+	if [ -e /mnt/tmp/.run_fs_check ] || [ -e /mnt/tmp/.fix_fs_on_boot_auto ]; then
+
+		# check cache
+		$BB sh -c "/sbin/e2fsck -fyc $DEVICE_CACHE" >> $LOG_CACHE;
+		$BB sh -c "/sbin/e2fsck -fyc $DEVICE_CACHE" >> $LOG_CACHE;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
+
+		# check data
+		$BB sh -c "/sbin/e2fsck -fyc $DEVICE_DATA" >> $LOG_DATA;
+		$BB sh -c "/sbin/e2fsck -fyc $DEVICE_DATA" >> $LOG_DATA;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
+
+		# check data
+		$BB sh -c "/sbin/e2fsck -fyc $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+		$BB sh -c "/sbin/e2fsck -fyc $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+	fi;
+}
+
+PARTITION_TUNING;
+
 # mounting system!
 $BB mount -t ext4 -o rw,noauto_da_alloc,journal_async_commit /res/dev/system /system;
 
@@ -303,132 +471,6 @@ JBMIUI=`ls /system/framework/framework-miui-res.apk | wc -l`;
 CM_AOKP_10_JB=`ls /system/bin/wfd | wc -l`;
 CM_AOKP_10_2_JB=`$BB cat /system/build.prop | $BB grep "ro.build.version.release=4.3" | wc -l`;
 
-#############################
-# Partition global tuning!
-#############################
-
-NEED_CHECK()
-{
-	echo "1" > /tmp/need_check_part;
-}
-
-PARTITION_TUNING()
-{
-	DEVICE_DATA="/res/dev/data";
-	DIR_DATA="/data";
-	LOG_DATA="/log-data";
-	LOG_DATA_TMP="/log-data-tmp";
-
-	DEVICE_CACHE="/res/dev/cache";
-	DIR_CACHE="/cache";
-	LOG_CACHE="/log-cache";
-	LOG_CACHE_TMP="/log-cache-tmp";
-
-	# new empty log
-	$BB sh -c "/sbin/date" > $LOG_DATA;
-	$BB sh -c "/sbin/date" > $LOG_CACHE;
-
-	# umount 
-	$BB umount -l $DIR_DATA;
-	$BB umount -l $DIR_CACHE;
-
-	# set fs-feature -> [^]has_journal
-	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'features' | grep 'has_journal' | wc -l" > $LOG_CACHE_TMP;
-	if [ "`cat $LOG_CACHE_TMP`" -eq "0" ]; then
-		$BB sh -c "/sbin/tune2fs -O has_journal $DEVICE_CACHE" >> $LOG_CACHE;
-		NEED_CHECK;
-	fi;
-	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'features' | grep 'has_journal' | wc -l" > $LOG_DATA_TMP;
-	if [ "`cat $LOG_DATA_TMP`" -eq "0" ]; then
-		$BB sh -c "/sbin/tune2fs -O has_journal $DEVICE_DATA" >> $LOG_DATA;
-		NEED_CHECK;
-	fi;
-
-	# set fs-feature -> [^]dir_index
-	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'features' | grep 'dir_index' | wc -l" > $LOG_CACHE_TMP;
-	if [ "`cat $LOG_CACHE_TMP`" -eq "0" ]; then
-		$BB sh -c "/sbin/tune2fs -O dir_index $DEVICE_CACHE" >> $LOG_CACHE;
-		NEED_CHECK;
-	fi;
-	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'features' | grep 'dir_index' | wc -l" > $LOG_DATA_TMP;
-	if [ "`cat $LOG_DATA_TMP`" -eq "0" ]; then
-		$BB sh -c "/sbin/tune2fs -O dir_index $DEVICE_DATA" >> $LOG_DATA;
-		NEED_CHECK;
-	fi;
-
-	# check if jornal recover needed
-	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'state' | grep 'clean' | wc -l" > $LOG_CACHE_TMP;
-	if [ "`cat $LOG_CACHE_TMP`" -eq "0" ]; then
-		NEED_CHECK;
-	fi;
-	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'state' | grep 'clean' | wc -l" > $LOG_DATA_TMP;
-	if [ "`cat $LOG_DATA_TMP`" -eq "0" ]; then
-		NEED_CHECK;
-	fi;
-
-	$BB sh -c "/sbin/tune2fs -l /dev/block/mmcblk0p1 | grep 'state' | grep 'clean' | wc -l" > /tmp/efs_check;
-	if [ "`cat /tmp/efs_check`" -eq "0" ]; then
-		echo "need" > /tmp/efs_check;
-	fi;
-
-	# set mount option -> [^]journal_data_writeback
-	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'Default mount options' | grep 'journal_data_writeback' | wc -l" > $LOG_CACHE_TMP;
-	if [ "`cat $LOG_CACHE_TMP`" -eq "0" ]; then
-		$BB sh -c "/sbin/tune2fs -o journal_data_writeback $DEVICE_CACHE" >> $LOG_CACHE;
-		NEED_CHECK;
-	fi;
-	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'Default mount options' | grep 'journal_data_writeback' | wc -l" > $LOG_DATA_TMP;
-	if [ "`cat $LOG_DATA_TMP`" -eq "0" ]; then
-		$BB sh -c "/sbin/tune2fs -o journal_data_writeback $DEVICE_DATA" >> $LOG_DATA;
-		NEED_CHECK;
-	fi;
-
-	# set inode to 256
-	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'Inode size' | grep '256' | wc -l" > $LOG_CACHE_TMP;
-	if [ "`cat $LOG_CACHE_TMP`" -eq "0" ]; then
-		$BB sh -c "/sbin/tune2fs -I 256 $DEVICE_CACHE" >> $LOG_CACHE;
-	fi;
-	$BB sh -c "/sbin/tune2fs -l $DEVICE_DATA | grep 'Inode size' | grep '256' | wc -l" > $LOG_DATA_TMP;
-	if [ "`cat $LOG_DATA_TMP`" -eq "0" ]; then
-		$BB sh -c "/sbin/tune2fs -I 256 $DEVICE_DATA" >> $LOG_DATA;
-	fi;
-
-	# check 'X2' partitions, if needed
-	if [ "`cat /tmp/need_check_part`" -eq "1" ]; then
-		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
-		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
-		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
-		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
-	fi;
-	if [ "`cat /tmp/efs_check`" == "need" ]; then
-		$BB sh -c "/sbin/e2fsck -p /dev/block/mmcblk0p1" > /tmp/efs_check;
-		$BB sh -c "/sbin/e2fsck -p /dev/block/mmcblk0p1" >> /tmp/efs_check;
-	fi;
-
-	# only if asked by user via stweaks
-	if [ -e /system/run_fs_check ]; then
-		# reset the lock-file
-		$BB rm -f /system/run_fs_check;
-
-		$BB mount -t ext4 $DEVICE_DATA /data;
-		$BB rm -f /data/dalvik-cache/*;
-		sync;
-		umount /data;
-
-		# check cache
-		$BB sh -c "/sbin/e2fsck -fyc $DEVICE_CACHE"
-		$BB sh -c "/sbin/e2fsck -fyc $DEVICE_CACHE" >> $LOG_CACHE;
-		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
-		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
-
-		# check data
-		$BB sh -c "/sbin/e2fsck -fyc $DEVICE_DATA"
-		$BB sh -c "/sbin/e2fsck -fyc $DEVICE_DATA" >> $LOG_DATA;
-		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
-		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
-	fi;
-}
-
 USER_ACTIONS()
 {
 	if [ "$JBSAMMY" -eq "1" ] || [ "$JBMIUI" -eq "1" ]; then
@@ -473,7 +515,6 @@ USER_ACTIONS()
 
 BOOTROM()
 {
-	PARTITION_TUNING;
 	USER_ACTIONS;
 	$BB rm -f /sbin/mount;
 	exec /sbin/init.samsung;

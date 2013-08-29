@@ -2,7 +2,7 @@
 
 fixFS="$EXTERNAL_STORAGE/.run_fs_check";
 
-f [ ! -e $fixFS ]; then
+if [ ! -e $fixFS ]; then
 	echo "fix fs" > $fixFS;
 	echo "Activated! Do Titanium-Backup before reboot, just in case!";
 else

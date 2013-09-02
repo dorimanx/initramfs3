@@ -344,12 +344,12 @@ CPU_GOV_TWEAKS()
 			hotplug_freq_snd_tmp="/dev/null";
 		fi;
 
-		local up_load_tmp="/sys/devices/system/cpu/cpufreq/$SYSTEM_GOVERNOR/up_load";
+		local up_load_tmp="/sys/devices/system/cpu/cpufreq/$SYSTEM_GOVERNOR/hotplug_load_1_1";
 		if [ ! -e $up_load_tmp ]; then
 			up_load_tmp="/dev/null";
 		fi;
 
-		local down_load_tmp="/sys/devices/system/cpu/cpufreq/$SYSTEM_GOVERNOR/down_load";
+		local down_load_tmp="/sys/devices/system/cpu/cpufreq/$SYSTEM_GOVERNOR/hotplug_load_2_0";
 		if [ ! -e $down_load_tmp ]; then
 			down_load_tmp="/dev/null";
 		fi;
@@ -439,9 +439,9 @@ CPU_GOV_TWEAKS()
 			freq_up_brake_tmp="/dev/null";
 		fi;
 
-		local onecoresuspend_tmp="/sys/devices/system/cpu/cpufreq/$SYSTEM_GOVERNOR/onecoresuspend";
-		if [ ! -e $onecoresuspend_tmp ]; then
-			onecoresuspend_tmp="/dev/null";
+		local maxcoreslimit_tmp="/sys/devices/system/cpu/cpufreq/$SYSTEM_GOVERNOR/maxcoreslimit";
+		if [ ! -e $maxcoreslimit_tmp ]; then
+			maxcoreslimit_tmp="/dev/null";
 		fi;
 
 		local force_freqs_step_tmp="/sys/devices/system/cpu/cpufreq/$SYSTEM_GOVERNOR/force_freqs_step";
@@ -547,7 +547,7 @@ CPU_GOV_TWEAKS()
 			echo "$dec_cpu_load_sleep" > $dec_cpu_load_tmp;
 			echo "$freq_up_brake_at_min_freq_sleep" > $freq_up_brake_at_min_freq_tmp;
 			echo "$freq_up_brake_sleep" > $freq_up_brake_tmp;
-			echo "1" > $onecoresuspend_tmp;
+			echo "1" > $maxcoreslimit_tmp;
 			echo "$force_freqs_step" > $force_freqs_step_tmp;
 			echo "$sampling_down_max_mom_sleep" > $sampling_down_max_mom_tmp;
 			echo "$sampling_down_mom_sens_sleep" > $sampling_down_mom_sens_tmp;
@@ -578,7 +578,11 @@ CPU_GOV_TWEAKS()
 			echo "$sampling_down_factor" > $sampling_down_factor_tmp;
 			echo "$down_differential" > $down_differential_tmp;
 			echo "$freq_step_at_min_freq" > $freq_step_at_min_freq_tmp;
-			echo "$freq_step" > $freq_step_tmp;
+			if [ "$SYSTEM_GOVERNOR" == zzmoove ]; then
+				echo "5" > $freq_step_tmp;
+			else
+				echo "$freq_step" > $freq_step_tmp;
+			fi;
 			echo "$freq_step_dec" > $freq_step_dec_tmp;
 			echo "$freq_step_dec_at_max_freq" > $freq_step_dec_at_max_freq_tmp;
 			echo "$freq_for_responsiveness" > $freq_for_responsiveness_tmp;
@@ -589,7 +593,7 @@ CPU_GOV_TWEAKS()
 			echo "$dec_cpu_load" > $dec_cpu_load_tmp;
 			echo "$freq_up_brake_at_min_freq" > $freq_up_brake_at_min_freq_tmp;
 			echo "$freq_up_brake" > $freq_up_brake_tmp;
-			echo "0" > $onecoresuspend_tmp;
+			echo "2" > $maxcoreslimit_tmp;
 			echo "$force_freqs_step" > $force_freqs_step_tmp;
 			echo "$sampling_down_max_mom" > $sampling_down_max_mom_tmp;
 			echo "$sampling_down_mom_sens" > $sampling_down_mom_sens_tmp;

@@ -5,6 +5,7 @@
 /cache		ext4		/dev/block/mmcblk0p7
 /system		ext4		/dev/block/mmcblk0p9
 /data		ext4		/dev/block/mmcblk0p10
+/sd-ext		ext4		/dev/block/mmcblk0p12
 
 /emmc		vfat		/dev/block/mmcblk0p11
 /sdcard		auto		/dev/block/mmcblk1p1

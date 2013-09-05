@@ -390,10 +390,14 @@ SECROM_FUNCTION_AOSP()
 	# init.rc style JB/CM/AOKP
 	if [ "$SECONDROM" -eq "1" ]; then
 		$BB mv /init.smdk4210.rc.2 /init.smdk4210.rc;
-		$BB rm /init.rc.2;
+		if [ -e /init.rc.2 ]; then
+			$BB rm /init.rc.2;
+		fi;
 	else
 		$BB rm /init.smdk4210.rc.2;
-		$BB rm /init.rc.2;
+		if [ -e /init.rc.2 ]; then
+			$BB rm /init.rc.2;
+		fi;
 	fi;
 }
 
@@ -405,7 +409,9 @@ SECROM_FUNCTION_SAMMY()
 		$BB mv /init.rc.2 /init.rc
 	else
 		$BB rm /init.smdk4210.rc.2;
-		$BB rm /init.rc.2;
+		if [ -e /init.rc.2 ]; then
+			$BB rm /init.rc.2;
+		fi;
 	fi;
 }
 

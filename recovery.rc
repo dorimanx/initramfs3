@@ -28,8 +28,7 @@ on init
 
 on post-fs-data
 # insmod kernel modules
-    insmod /lib/exfat_modules/exfat_core.ko
-    insmod /lib/exfat_modules/exfat_fs.ko
+    insmod /lib/modules/exfat.ko
 
 on fs
     # check encryption status, checking UMS & data should be excuted after this command 

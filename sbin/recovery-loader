@@ -13,11 +13,18 @@ $BB chmod 000 /sys/devices/platform/i2c-gpio.9/i2c-9/9-0036/power_supply/fuelgau
 
 $BB rm -rf /emmc
 $BB mkdir /emmc
-$BB chmod 777 /emmc
+$BB chmod -R 777 /emmc
 
 $BB rm -rf /sdcard
 $BB mkdir /sdcard
-$BB chmod 777 /sdcard
+$BB chmod -R 777 /sdcard
+
+$BB mkdir /emmc-tmp
+$BB chmod -R 777 /emmc-tmp
+
+$BB rm -rf /sd-ext
+$BB mkdir /sd-ext
+$BB chmod -R 777 /sd-ext
 
 $BB rm -rf /etc
 $BB mkdir /etc
@@ -31,7 +38,7 @@ echo "1" > /sys/class/mdnie/mdnie/mode
 
 $BB rm -rf /cache
 $BB mkdir /cache
-$BB chmod 777 /cache
+$BB chmod -R 777 /cache
 $BB mount -t ext4 /dev/block/mmcblk0p7 /cache
 $BB mkdir /cache/recovery
 $BB chmod 770 /cache/recovery
@@ -50,6 +57,18 @@ $BB mkdir /secondrom_system
 #echo "7" > /sys/vibrator/vibrator_level
 echo "75" > /sys/vibrator/pwm_val
 echo 102 > /sys/devices/virtual/sec/sec_key/set_homekey
+
+# Enable Dual Mount in recovery! and fix .android_secure backup and restore.
+echo "/dev/block/mmcblk0p11" > /sys/devices/virtual/android_usb/android0/f_mass_storage/lun0/file;
+if [ -e /dev/block/mmcblk1p1 ]; then
+	echo "/dev/block/mmcblk1p1" > /sys/devices/virtual/android_usb/android0/f_mass_storage/lun1/file;
+	$BB mount -t vfat /dev/block/mmcblk0p11 /emmc-tmp;
+	$BB mount -t auto /dev/block/mmcblk1p1 /sdcard;
+	if [ ! -e /sdcard/.android_secure ]; then
+		mkdir /sdcard/.android_secure;
+	fi;
+	$BB mount --bind /emmc-tmp/.android_secure /sdcard/.android_secure;
+fi;
 
 if [ -f /cache/recovery/command ]; then
 	$BB cp /res/keys-samsung /res/keys

@@ -375,18 +375,20 @@ on boot
     write /sys/class/sec/sec_epen/epen_firm_update R
 
 # Permissions for Touchkey
-    chown system radio /sys/class/sec/sec_touchkey/enable_disable
-    chown system radio /sys/class/sec/sec_touchkey/recommended_version
-    chown system radio /sys/class/sec/sec_touchkey/touch_sensitivity
-    chown system radio /sys/class/sec/sec_touchkey/brightness
-    chown system radio /sys/class/sec/sec_touchkey/touchkey_brightness
-    chown system radio /sys/class/sec/sec_touchkey/touchkey_back
-    chown system radio /sys/class/sec/sec_touchkey/touchkey_menu
-    chown system radio /sys/class/sec/sec_touchkey/touchkey_firm_version_panel
-    chown system radio /sys/class/sec/sec_touchkey/touchkey_firm_version_phone
-    chown system radio /sys/class/sec/sec_touchkey/touchkey_firm_update_status
-    chown system radio /sys/class/sec/sec_touchkey/touchkey_firm_update
-    chown system radio /sys/class/sec/sec_touchkey/updated_version
+    chown system radio /sys/devices/virtual/sec/sec_touchkey/force_disable
+    chown system radio /sys/devices/virtual/sec/sec_touchkey/enable_disable
+    chown system radio /sys/devices/virtual/sec/sec_touchkey/recommended_version
+    chown system radio /sys/devices/virtual/sec/sec_touchkey/touch_sensitivity
+    chown system radio /sys/devices/virtual/sec/sec_touchkey/brightness
+    chown system radio /sys/devices/virtual/sec/sec_touchkey/touchkey_brightness
+    chown system radio /sys/devices/virtual/sec/sec_touchkey/touchkey_back
+    chown system radio /sys/devices/virtual/sec/sec_touchkey/touchkey_menu
+    chown system radio /sys/devices/virtual/sec/sec_touchkey/touchkey_firm_version_panel
+    chown system radio /sys/devices/virtual/sec/sec_touchkey/touchkey_firm_version_phone
+    chown system radio /sys/devices/virtual/sec/sec_touchkey/touchkey_firm_update_status
+    chown system radio /sys/devices/virtual/sec/sec_touchkey/touchkey_firm_update
+    chown system radio /sys/devices/virtual/sec/sec_touchkey/updated_version
+    chown system radio /sys/devices/virtual/sec/sec_touchkey/led_timeout
 
     chown system radio /sys/class/sec/tsp_noise_test/set_firm_version
     chown system radio /sys/class/sec/tsp_noise_test/set_threshould

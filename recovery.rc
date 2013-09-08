@@ -18,12 +18,9 @@ on init
     mkdir /data
     mkdir /cache
     mkdir /preload
-    mkdir /efs
-    mkdir /tmp
 
     chown root shell /tmp
     chmod 0775 /tmp
-
     mount /tmp /tmp tmpfs
 
 on post-fs-data
@@ -56,6 +53,15 @@ on boot
 
 service ueventd /sbin/ueventd
     critical
+
+service console /sbin/sh
+    class core
+    console
+    disabled
+    group log
+
+on property:ro.debuggable=1
+    start console
 
 service recovery /sbin/recovery-loader
 

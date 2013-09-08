@@ -236,7 +236,7 @@
 /dev/ttySAC1                            u:object_r:gps_device:s0
 
 # Sensors
-/dev/akm8963                            u:object_r:sensors_device:s0
+/dev/akm8975                            u:object_r:sensors_device:s0
 
 # for wpa_supp
 /dev/rfkill                             u:object_r:rfkill_device:s0

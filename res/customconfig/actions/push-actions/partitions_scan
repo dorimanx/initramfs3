@@ -17,4 +17,3 @@ $BB sh -c "/sbin/tune2fs -l /dev/block/mmcblk0p12 | grep 'Filesystem state' | cu
 
 SYSTEM_STATE=`cat /tmp/storage_check`;
 echo $SYSTEM_STATE;
-

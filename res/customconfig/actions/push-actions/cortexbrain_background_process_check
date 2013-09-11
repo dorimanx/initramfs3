@@ -9,4 +9,3 @@ export PATH="/res/customconfig/actions/push-actions:${PATH}";
 		echo "SERVICE OFFLINE";
 	fi;
 )&
-

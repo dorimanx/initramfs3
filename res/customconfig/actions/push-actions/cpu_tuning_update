@@ -12,4 +12,3 @@
 sleep 1;
 CPU_LOG=`cat /data/.siyah/cpu_status`;
 echo $CPU_LOG;
-

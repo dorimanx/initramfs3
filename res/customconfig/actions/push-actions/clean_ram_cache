@@ -18,4 +18,3 @@
 sleep 3;
 RAM_LOG=`cat /tmp/ram_clean`;
 echo "$RAM_LOG";
-

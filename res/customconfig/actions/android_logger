@@ -24,4 +24,3 @@ case "${android_logger}" in
 		android_logger=auto;
 	;;
 esac;
-

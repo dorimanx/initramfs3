@@ -4,4 +4,3 @@
 	CPU_VOT=`cat /sys/devices/system/cpu/cpu0/cpufreq/vdd_levels`;
 	echo "$CPU_VOT";
 )&
-

@@ -14,10 +14,9 @@ case "$2" in
 		echo "Color was set to default, reloading";
 		sleep 2
 		pkill -f "com.gokhanmoral.stweaks.app";
-		am start -a android.intent.action.MAIN -n com.gokhanmoral.stweaks.app/.MainActivity;		
+		am start -a android.intent.action.MAIN -n com.gokhanmoral.stweaks.app/.MainActivity;
 	;;
 	*)
 		echo "need input, 0=nothing, 1=reset color";
 	;;
 esac;
-

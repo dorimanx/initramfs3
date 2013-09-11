@@ -32,4 +32,3 @@ if [ "$WGET_CHECK1" -eq "1" ] || [ "$WGET_CHECK2" -eq "1" ]; then
 else
 	echo "Your BusyBox is not supported! Update to latest";
 fi;
-

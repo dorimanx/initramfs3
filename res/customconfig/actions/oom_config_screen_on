@@ -40,4 +40,3 @@ if [ "$AUTO_OOM" -eq "1" ]; then
 		;;
 	esac;
 fi;
-

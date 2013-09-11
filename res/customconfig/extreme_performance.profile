@@ -192,6 +192,7 @@ chargecurrent3=500
 default_stats=off
 init_d=off
 logger=off
+fix_fs_on_boot_auto=off
 install_root=on
 cortexbrain_background_process=1
 android_logger=auto

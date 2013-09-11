@@ -24,4 +24,3 @@ if [ "a$2" != "a" ]; then
 fi;
 
 echo "${usb_mode}";
-

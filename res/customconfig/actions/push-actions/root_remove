@@ -66,4 +66,3 @@ if [ ! -f /system/xbin/su ]; then
 else
 	echo "ROOT NOT REMOVED! Try again";
 fi;
-

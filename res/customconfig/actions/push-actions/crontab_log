@@ -34,4 +34,3 @@ cat /data/crontab/cron-zipalign >> /data/crontab/cron_log;
 # push all to one log.
 CRON_LOG=`cat /data/crontab/cron_log`;
 echo $CRON_LOG;
-

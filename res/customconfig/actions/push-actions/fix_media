@@ -11,4 +11,3 @@ else
 	rm -f $fixMedia;
 	echo "ABORT, ABORT, ABORT :)"
 fi;
-

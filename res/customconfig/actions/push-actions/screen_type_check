@@ -6,7 +6,7 @@
 	SCREEN_CONFIG=`cat /sys/devices/virtual/sec/sec_touchscreen/tsp_touch_config`;
 
 	echo "$SCREEN_TYPE" > /tmp/screen_check;
-	echo "$SCREEN_CONFIG" >> /tmp/screen_check; 
+	echo "$SCREEN_CONFIG" >> /tmp/screen_check;
 
 	chmod 777 /tmp/screen_check;
 )&
@@ -15,4 +15,3 @@ sleep 1;
 SCREEN_CHECK=`cat /tmp/screen_check`;
 
 echo $SCREEN_CHECK;
-

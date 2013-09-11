@@ -71,4 +71,3 @@ case "${zramtweaks}" in
 		zramtweaks=4;
 	;;
 esac;
-

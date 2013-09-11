@@ -39,7 +39,7 @@ case "${debug_to_sd}" in
 			echo "" > $DEBUG_FILE;
 			echo " --- DEBUG from "`date`" --- " >> $DEBUG_FILE;
 			echo "" >> $DEBUG_FILE;
-	
+
 			# Kernel-Info
 			echo "Kernel-Version:" >> $DEBUG_FILE;
 			cat /proc/version >> $DEBUG_FILE;
@@ -99,15 +99,15 @@ case "${debug_to_sd}" in
 			echo "" >> $DEBUG_FILE;
 			echo "Time-In-State:" >> $DEBUG_FILE;
 			cat /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state >> $DEBUG_FILE;
-			for i in `cat /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state | cut -f 2 -d ' '`; do 
-				summe=$(($summe+$i)); 
-			done; 
-			summe=$(($summe/100)); 
-			summe=$(($summe/60)); 
+			for i in `cat /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state | cut -f 2 -d ' '`; do
+				summe=$(($summe+$i));
+			done;
+			summe=$(($summe/100));
+			summe=$(($summe/60));
 			if [ $summe -lt 60 ]; then
 				echo "uptime with CPU on: $summe min" >> $DEBUG_FILE;
 			else
-				summe=$(($summe/60)); 
+				summe=$(($summe/60));
 				echo "uptime with CPU on: $summe h" >> $DEBUG_FILE;
 			fi;
 			echo "" >> $DEBUG_FILE;
@@ -115,7 +115,7 @@ case "${debug_to_sd}" in
 			uptime >> $DEBUG_FILE;
 			SEPARATOR;
 
-			echo "more CPU-Infos:" >> $DEBUG_FILE;	
+			echo "more CPU-Infos:" >> $DEBUG_FILE;
 			cpuinfo_cur_freq=$(cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq);
 			for i in `ls /sys/devices/system/cpu/cpu0/cpufreq/`; do
 				if [ ! -d "/sys/devices/system/cpu/cpu0/cpufreq/${i}" ]; then
@@ -162,7 +162,7 @@ case "${debug_to_sd}" in
 			lsmod >> $DEBUG_FILE;
 			SEPARATOR;
 
-			# Partitions 
+			# Partitions
 			echo "Partitions-Info:" >> $DEBUG_FILE;
 			mount >> $DEBUG_FILE;
 			cat /proc/partitions >> $DEBUG_FILE;
@@ -200,7 +200,7 @@ case "${debug_to_sd}" in
 			SEPARATOR;
 
 			echo "Process-Info: nice (priority)" >> $DEBUG_FILE;
-			for z in `ls /proc/*/stat`; do 
+			for z in `ls /proc/*/stat`; do
 				tmp=`cat $z` && echo $tmp | cut -f 2 -d ' ' >> $DEBUG_FILE && echo $tmp | cut -f 19 -d ' ' >> $DEBUG_FILE && echo " " >> $DEBUG_FILE;
 			done;
 			SEPARATOR;
@@ -220,9 +220,9 @@ case "${debug_to_sd}" in
 
 			echo "dmesg-Fail:" >> $DEBUG_FILE;
 			dmesg | grep -i "Fail" >> $DEBUG_FILE;
-			SEPARATOR;                               			
+			SEPARATOR;
 
-			if [ "$logger" == "off" ]; then 
+			if [ "$logger" == "off" ]; then
 				echo "0" > /sys/module/ump/parameters/ump_debug_level;
 				echo "0" > /sys/module/mali/parameters/mali_debug_level;
 				echo "0" > /sys/module/kernel/parameters/initcall_debug;
@@ -249,9 +249,8 @@ case "${debug_to_sd}" in
 			#maybe we can also grep / remove personal infos here (e.g . email address)
 		)&
 		echo "Collecting logs for 60Sec please wait";
-	;;	
+	;;
 	*)
 		echo "need input";
 	;;
 esac;
-

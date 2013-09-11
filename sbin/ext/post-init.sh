@@ -22,10 +22,8 @@ for i in $PIDOFINIT; do
 done;
 
 if [ `cat /tmp/sec_rom_boot` -eq "1" ]; then
-	$BB mount -o remount,rw,noauto_da_alloc,journal_async_commit /data;
-	$BB mount -o remount,rw,noauto_da_alloc,journal_async_commit /efs;
-else
-	$BB mount -o remount,rw,noauto_da_alloc,journal_async_commit /preload;
+	$BB mount -o remount,rw,noauto_da_alloc,journal_async_commit,discard /data;
+	$BB mount -o remount,rw,noauto_da_alloc,journal_async_commit,discard /efs;
 fi;
 
 # allow user and admin to use all free mem.
@@ -319,7 +317,7 @@ chmod 666 /tmp/uci_done;
 	DM_COUNT=`ls -d /sys/block/dm* | wc -l`;
 	if [ "$DM_COUNT" -gt "0" ]; then
 		for d in $($BB mount | grep dm | cut -d " " -f1 | grep -v vold); do
-			$BB mount -o remount,ro,noauto_da_alloc $d;
+			$BB mount -o remount,ro,noauto_da_alloc,discard $d;
 		done;
 
 		DM=`ls -d /sys/block/dm*`;

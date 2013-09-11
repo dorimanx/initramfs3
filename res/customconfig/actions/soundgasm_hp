@@ -58,4 +58,3 @@ case "$soundgasm_hp" in
 		soundgasm_hp=0;
 	;;
 esac;
-

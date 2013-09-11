@@ -73,7 +73,7 @@ case "${gpsregion}" in
 	;;
 	South-America)
 		CHECKGPS=`cat $var_gps | grep "NTP_SERVER=0.south-america.pool.ntp.org"`;
-    	if [ "$CHECKGPS" != "NTP_SERVER=0.south-america.pool.ntp.org" ]; then
+	if [ "$CHECKGPS" != "NTP_SERVER=0.south-america.pool.ntp.org" ]; then
 			sed -i "s/NTP_SERVER[.a-zA-Z\=-\0-5\]*//g" $var_gps;
 			sed -i "s/-america[.a-zA-Z\=-\0-5\]*//g" $var_gps;
 			echo "NTP_SERVER=south-america.pool.ntp.org" >> $var_gps;
@@ -100,4 +100,3 @@ case "${gpsregion}" in
 		gpsregion="No_GPS_Zone_changes";
 	;;
 esac;
-

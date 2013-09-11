@@ -8,8 +8,8 @@ export PATH="/res/customconfig/actions/push-actions:${PATH}";
 		echo "Optimizing and defragging your database files (*.db)";
 		echo "*********************************************";
 		echo "";
-	
-		for i in `busybox find /data -iname "*.db"`; do 
+
+		for i in `busybox find /data -iname "*.db"`; do
 			/system/xbin/sqlite3 $i 'VACUUM;';
 			/system/xbin/sqlite3 $i 'REINDEX;';
 		done;
@@ -22,4 +22,3 @@ export PATH="/res/customconfig/actions/push-actions:${PATH}";
 		echo "Database Optimizing already running, please wait.";
 	fi;
 )&
-

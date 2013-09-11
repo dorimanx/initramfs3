@@ -148,4 +148,3 @@ case "${config_backup_restore}" in
 		echo "need input, 1=backup; 2=restore";
 	;;
 esac;
-

@@ -9,4 +9,3 @@ export PATH="/res/customconfig/actions/push-actions:${PATH}";
 		echo "fix_permissions still running, please wait";
 	fi;
 )&
-

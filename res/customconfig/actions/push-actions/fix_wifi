@@ -6,4 +6,3 @@
 	svc wifi enable;
 	echo "WIFI Release Renew is DONE"
 )&
-

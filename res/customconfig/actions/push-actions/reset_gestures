@@ -28,4 +28,3 @@ export PATH="/res/customconfig/actions/push-actions:${PATH}";
 )&
 
 echo "Gestures reset DONE! your old file can be found in /data/gesture_set.sh.bkp or bkp_sec";
-

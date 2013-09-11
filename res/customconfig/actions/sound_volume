@@ -25,4 +25,3 @@ if [ -d /sys/devices/virtual/sound/sound_mc1n2/ ]; then
 	# apply new settings to driver.
 	echo "1" > /sys/devices/virtual/sound/sound_mc1n2/update_volume;
 fi;
-

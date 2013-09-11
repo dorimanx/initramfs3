@@ -26,4 +26,3 @@ if [ "a$2" != "a" ]; then
 fi;
 
 echo ${bln_switch};
-

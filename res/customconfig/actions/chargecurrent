@@ -11,4 +11,3 @@ else
 fi;
 
 echo "$chargecurrent1" "$chargecurrent2" "$chargecurrent3" > /sys/devices/virtual/misc/charge_current/charge_current;
-

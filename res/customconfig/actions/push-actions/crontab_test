@@ -6,4 +6,3 @@ if [ "$CRON_SERVICE" != 0 ]; then
 else
 	echo "Service is OFFLINE or NOT supported";
 fi;
-

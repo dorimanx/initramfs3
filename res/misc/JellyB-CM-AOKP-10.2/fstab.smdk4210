@@ -4,9 +4,9 @@
 # specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
 # data partition must be located at the bottom for supporting device encryption
 
-/res/dev/cache		/cache		ext4	nosuid,nodev,noauto_da_alloc,journal_async_commit		wait,check_spo
-/dev/block/mmcblk0p1	/efs		ext4	nosuid,nodev,noauto_da_alloc,journal_async_commit 		wait,check_spo
-/res/dev/data		/data		ext4	nosuid,nodev,noauto_da_alloc,journal_async_commit,errors=panic 	wait,check_spo,encryptable=/efs/metadata
+/res/dev/cache		/cache		ext4	nosuid,nodev,noauto_da_alloc,journal_async_commit,discard 		wait,check_spo
+/dev/block/mmcblk0p1	/efs		ext4	nosuid,nodev,noauto_da_alloc,journal_async_commit,discard 		wait,check_spo
+/res/dev/data		/data		ext4	nosuid,nodev,noauto_da_alloc,journal_async_commit,discard,errors=panic 	wait,check_spo,encryptable=/efs/metadata
 
 # vold-managed volumes ("block device" is actually a sysfs devpath)
 /devices/platform/dw_mmc/mmc_host/mmc0/mmc0 /storage/sdcard0        auto      defaults      voldmanaged=sdcard0:11,nonremovable

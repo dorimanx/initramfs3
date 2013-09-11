@@ -1,18 +1,21 @@
 #!/sbin/busybox sh
 
 if [ "a$2" != "a" ]; then
-        case "$2" in
-                on)
-                        echo 1 > $EXTERNAL_STORAGE/.fix_fs_on_boot_auto;
-                ;;
-                off)
-                        rm -f $EXTERNAL_STORAGE/.fix_fs_on_boot_auto;
-                ;;
-        esac;
+  case "$2" in
+    on)
+      echo "1" > $EXTERNAL_STORAGE/.fix_fs_on_boot_auto;
+    ;;
+    off)
+      if [ -e $EXTERNAL_STORAGE/.fix_fs_on_boot_auto ]; then
+        rm -f $EXTERNAL_STORAGE/.fix_fs_on_boot_auto;
+        echo off;
+      else
+        echo off;
+      fi;
+    ;;
+  esac;
 fi;
 
 if [ -f $EXTERNAL_STORAGE/.fix_fs_on_boot_auto ]; then
-        echo on;
-else
-        echo off;
-fi;
+  echo on;
+fi; 

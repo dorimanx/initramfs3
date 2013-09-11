@@ -29,4 +29,3 @@ case "${cortexbrain_background_process}" in
 		cortexbrain_background_process=1;
 	;;
 esac;
-

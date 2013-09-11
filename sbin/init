@@ -189,6 +189,49 @@ NEED_CHECK()
 	echo "1" > /tmp/need_check_part;
 }
 
+<<<<<<< HEAD
+=======
+# partition fix by forcing full scan and repair
+PARTITIONS_FIX()
+{
+	DEVICE_DATA="/res/dev/data";
+	LOG_DATA="/log-data";
+
+	DEVICE_CACHE="/res/dev/cache";
+	LOG_CACHE="/log-cache";
+
+	DEVICE_SYSTEM="/res/dev/system";
+	LOG_SYSTEM="/log-system";
+
+	DEVICE_PRELOAD="/dev/block/mmcblk0p12";
+	LOG_PRELOAD="/log-preload";
+
+	# check cache
+	$BB sh -c "/sbin/e2fsck -fyc $DEVICE_CACHE" >> $LOG_CACHE;
+	$BB sh -c "/sbin/e2fsck -fyc $DEVICE_CACHE" >> $LOG_CACHE;
+	$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
+	$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
+
+	# check data
+	$BB sh -c "/sbin/e2fsck -fyc $DEVICE_DATA" >> $LOG_DATA;
+	$BB sh -c "/sbin/e2fsck -fyc $DEVICE_DATA" >> $LOG_DATA;
+	$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
+	$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
+
+	# check data
+	$BB sh -c "/sbin/e2fsck -fyc $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+	$BB sh -c "/sbin/e2fsck -fyc $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+	$BB sh -c "/sbin/e2fsck -p $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+	$BB sh -c "/sbin/e2fsck -p $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+
+	# check preload
+	$BB sh -c "/sbin/e2fsck -fyc $DEVICE_PRELOAD" >> $LOG_PRELOAD;
+	$BB sh -c "/sbin/e2fsck -fyc $DEVICE_PRELOAD" >> $LOG_PRELOAD;
+	$BB sh -c "/sbin/e2fsck -p $DEVICE_PRELOAD" >> $LOG_PRELOAD;
+	$BB sh -c "/sbin/e2fsck -p $DEVICE_PRELOAD" >> $LOG_PRELOAD;
+}
+
+>>>>>>> cbfc9f154b8fb04baaddd37d2f47cd171ef379f9
 PARTITION_TUNING()
 {
 	DEVICE_DATA="/res/dev/data";
@@ -206,15 +249,33 @@ PARTITION_TUNING()
 	LOG_SYSTEM="/log-system";
 	LOG_SYSTEM_TMP="/log-system-tmp";
 
+<<<<<<< HEAD
+=======
+	DEVICE_PRELOAD="/dev/block/mmcblk0p12";
+	DIR_PRELOAD="/preload";
+	LOG_PRELOAD="/log-preload";
+	LOG_PRELOAD_TMP="/log-preload-tmp";
+
+>>>>>>> cbfc9f154b8fb04baaddd37d2f47cd171ef379f9
 	# new empty log
 	$BB sh -c "/sbin/date" > $LOG_DATA;
 	$BB sh -c "/sbin/date" > $LOG_CACHE;
 	$BB sh -c "/sbin/date" > $LOG_SYSTEM;
+<<<<<<< HEAD
 
 	# umount 
 	$BB umount -l $DIR_DATA;
 	$BB umount -l $DIR_CACHE;
 	$BB umount -l $DIR_SYSTEM;
+=======
+	$BB sh -c "/sbin/date" > $LOG_PRELOAD;
+
+	# umount
+	$BB umount -l $DIR_DATA;
+	$BB umount -l $DIR_CACHE;
+	$BB umount -l $DIR_SYSTEM;
+	$BB umount -l $DIR_PRELOAD;
+>>>>>>> cbfc9f154b8fb04baaddd37d2f47cd171ef379f9
 
 	# set fs-feature -> [^]has_journal
 	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'features' | grep 'has_journal' | wc -l" > $LOG_CACHE_TMP;
@@ -232,6 +293,14 @@ PARTITION_TUNING()
 		$BB sh -c "/sbin/tune2fs -O has_journal $DEVICE_SYSTEM" >> $LOG_SYSTEM;
 		NEED_CHECK;
 	fi;
+<<<<<<< HEAD
+=======
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_PRELOAD | grep 'features' | grep 'has_journal' | wc -l" > $LOG_PRELOAD_TMP;
+	if [ "`cat $LOG_PRELOAD_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -O has_journal $DEVICE_PRELOAD" >> $LOG_PRELOAD;
+		NEED_CHECK;
+	fi;
+>>>>>>> cbfc9f154b8fb04baaddd37d2f47cd171ef379f9
 
 	# set fs-feature -> [^]dir_index
 	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'features' | grep 'dir_index' | wc -l" > $LOG_CACHE_TMP;
@@ -249,6 +318,14 @@ PARTITION_TUNING()
 		$BB sh -c "/sbin/tune2fs -O dir_index $DEVICE_SYSTEM" >> $LOG_SYSTEM;
 		NEED_CHECK;
 	fi;
+<<<<<<< HEAD
+=======
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_PRELOAD | grep 'features' | grep 'dir_index' | wc -l" > $LOG_PRELOAD_TMP;
+	if [ "`cat $LOG_PRELOAD_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -O dir_index $DEVICE_PRELOAD" >> $LOG_PRELOAD;
+		NEED_CHECK;
+	fi;
+>>>>>>> cbfc9f154b8fb04baaddd37d2f47cd171ef379f9
 
 	# check if jornal recover needed
 	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'state' | grep 'clean' | wc -l" > $LOG_CACHE_TMP;
@@ -263,7 +340,14 @@ PARTITION_TUNING()
 	if [ "`cat $LOG_SYSTEM_TMP`" -eq "0" ]; then
 		NEED_CHECK;
 	fi;
+<<<<<<< HEAD
 
+=======
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_PRELOAD | grep 'state' | grep 'clean' | wc -l" > $LOG_PRELOAD_TMP;
+	if [ "`cat $LOG_PRELOAD_TMP`" -eq "0" ]; then
+		NEED_CHECK;
+	fi;
+>>>>>>> cbfc9f154b8fb04baaddd37d2f47cd171ef379f9
 	$BB sh -c "/sbin/tune2fs -l /dev/block/mmcblk0p1 | grep 'state' | grep 'clean' | wc -l" > /tmp/efs_check;
 	if [ "`cat /tmp/efs_check`" -eq "0" ]; then
 		echo "need" > /tmp/efs_check;
@@ -285,6 +369,14 @@ PARTITION_TUNING()
 		$BB sh -c "/sbin/tune2fs -o journal_data_writeback $DEVICE_SYSTEM" >> $LOG_SYSTEM;
 		NEED_CHECK;
 	fi;
+<<<<<<< HEAD
+=======
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_PRELOAD | grep 'Default mount options' | grep 'journal_data_writeback' | wc -l" > $LOG_PRELOAD_TMP;
+	if [ "`cat $LOG_PRELOAD_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -o journal_data_writeback $DEVICE_PRELOAD" >> $LOG_PRELOAD;
+		NEED_CHECK;
+	fi;
+>>>>>>> cbfc9f154b8fb04baaddd37d2f47cd171ef379f9
 
 	# set inode to 256
 	$BB sh -c "/sbin/tune2fs -l $DEVICE_CACHE | grep 'Inode size' | grep '256' | wc -l" > $LOG_CACHE_TMP;
@@ -299,26 +391,50 @@ PARTITION_TUNING()
 	if [ "`cat $LOG_SYSTEM_TMP`" -eq "0" ]; then
 		$BB sh -c "/sbin/tune2fs -I 256 $DEVICE_SYSTEM" >> $LOG_SYSTEM;
 	fi;
+<<<<<<< HEAD
+=======
+	$BB sh -c "/sbin/tune2fs -l $DEVICE_PRELOAD | grep 'Inode size' | grep '256' | wc -l" > $LOG_PRELOAD_TMP;
+	if [ "`cat $LOG_PRELOAD_TMP`" -eq "0" ]; then
+		$BB sh -c "/sbin/tune2fs -I 256 $DEVICE_PRELOAD" >> $LOG_PRELOAD;
+	fi;
+>>>>>>> cbfc9f154b8fb04baaddd37d2f47cd171ef379f9
 
 	# check 'X2' partitions, if needed
 	if [ "`cat /tmp/need_check_part`" -eq "1" ]; then
 		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
 		$BB sh -c "/sbin/e2fsck -p $DEVICE_CACHE" >> $LOG_CACHE;
+<<<<<<< HEAD
 		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
 		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
 		$BB sh -c "/sbin/e2fsck -p $DEVICE_SYSTEM" >> $LOG_SYSTEM;
 		$BB sh -c "/sbin/e2fsck -p $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+=======
+
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_DATA" >> $LOG_DATA;
+
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_SYSTEM" >> $LOG_SYSTEM;
+
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_PRELOAD" >> $LOG_PRELOAD;
+		$BB sh -c "/sbin/e2fsck -p $DEVICE_PRELOAD" >> $LOG_PRELOAD;
+>>>>>>> cbfc9f154b8fb04baaddd37d2f47cd171ef379f9
 	fi;
 	if [ "`cat /tmp/efs_check`" == "need" ]; then
 		$BB sh -c "/sbin/e2fsck -p /dev/block/mmcblk0p1" > /tmp/efs_check;
 		$BB sh -c "/sbin/e2fsck -p /dev/block/mmcblk0p1" >> /tmp/efs_check;
 	fi;
 
+<<<<<<< HEAD
 	# only if asked by user via stweaks
+=======
+	# only if asked by user via stweaks with dalvik cache clean
+>>>>>>> cbfc9f154b8fb04baaddd37d2f47cd171ef379f9
 	if [ -e /mnt/tmp/.run_fs_check ]; then
 		# reset the lock-file
 		$BB rm -f /mnt/tmp/.run_fs_check;
 
+<<<<<<< HEAD
 		$BB mount -t ext4 $DEVICE_DATA /data;
 		$BB rm -f /data/dalvik-cache/*;
 		sync;
@@ -350,6 +466,30 @@ PARTITION_TUNING;
 
 # mounting system!
 $BB mount -t ext4 -o rw,noauto_da_alloc,journal_async_commit /res/dev/system /system;
+=======
+		$BB mount -t ext4 $DEVICE_DATA $DIR_DATA;
+		$BB rm -f $DIR_DATA/dalvik-cache/*;
+		sync;
+		umount $DIR_DATA;
+
+		# run partition fix by forcing full scan and repair
+		PARTITIONS_FIX;
+	fi;
+
+	# only if set auto via stweaks without dalvik cache clean
+	if [ -e /mnt/tmp/.fix_fs_on_boot_auto ]; then
+		# run partition fix by forcing full scan and repair
+		PARTITIONS_FIX;
+	fi;
+}
+PARTITION_TUNING;
+
+# mounting preloaded partition
+$BB mount -t ext4 -o rw,noauto_da_alloc,journal_async_commit,discard /dev/block/mmcblk0p12 /preload;
+
+# mounting system partition
+$BB mount -t ext4 -o rw,noauto_da_alloc,journal_async_commit,discard /res/dev/system /system;
+>>>>>>> cbfc9f154b8fb04baaddd37d2f47cd171ef379f9
 
 # fixing second rom partitions
 if [ "$SECONDROM" -eq "1" ]; then
@@ -616,4 +756,3 @@ fi;
 
 # if found by ROM detector and function finished, boot the detected ROM.
 BOOTROM;
-

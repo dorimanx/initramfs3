@@ -23,4 +23,3 @@ case "${negative_tweak}" in
 		negative_tweak=1;
 	;;
 esac;
-

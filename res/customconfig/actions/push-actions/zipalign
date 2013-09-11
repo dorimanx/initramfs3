@@ -64,4 +64,3 @@ export PATH="/res/customconfig/actions/push-actions:${PATH}";
 		echo "ZipAlign already running, please wait.";
 	fi;
 )&
-

@@ -19,7 +19,7 @@ export PATH="/res/customconfig/actions/push-actions:${PATH}";
 #			$BB xzcat su.tar.xz > su.tar;
 #			$BB tar -xvf SuperSU.apk.tar;
 #			$BB tar -xvf su.tar;
-#        		cd /;
+#			cd /;
 
 			# extract Payload with root files
 			$BB mount -o remount,rw /system;
@@ -107,4 +107,3 @@ export PATH="/res/customconfig/actions/push-actions:${PATH}";
 		fi;
 	fi;
 )&
-
